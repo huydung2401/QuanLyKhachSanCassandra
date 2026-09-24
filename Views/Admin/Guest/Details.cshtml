@@ -1,0 +1,665 @@
+﻿@model QuanLyKhachSan.Models.Guest
+
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+}
+
+<style>
+    .guest-details-page {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+    /* ==============================
+       HEADER
+       ============================== */
+
+    .page-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-header-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 6px 16px rgba(8, 145, 178, 0.22);
+    }
+
+    .page-header-text h2 {
+        margin: 0 0 5px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-header-text p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #374151;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+        .back-button:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+    /* ==============================
+       ERROR
+       ============================== */
+
+    .error-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 14px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 9px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-size: 14px;
+    }
+
+    .error-box-icon {
+        flex-shrink: 0;
+        margin-top: 1px;
+        color: #dc2626;
+    }
+
+    /* ==============================
+       MAIN CARD
+       ============================== */
+
+    .details-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fafafa;
+        gap: 15px;
+    }
+
+    .card-header-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        color: #1f2937;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+        .card-header-title i {
+            color: #0891b2;
+        }
+
+    .customer-code {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #ecfeff;
+        color: #0e7490;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .card-body-custom {
+        padding: 30px 25px;
+    }
+
+    /* ==============================
+       PROFILE
+       ============================== */
+
+    .profile-section {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 30px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .profile-avatar {
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        color: #0369a1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .profile-info h3 {
+        margin: 0 0 5px;
+        color: #1f2937;
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .profile-info p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* ==============================
+       INFORMATION GRID
+       ============================== */
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 25px;
+    }
+
+    .info-item {
+        padding: 17px 18px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        transition: all 0.2s ease;
+    }
+
+        .info-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+        }
+
+    .info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+        .info-label i {
+            width: 16px;
+            text-align: center;
+            color: #0891b2;
+        }
+
+    .info-value {
+        color: #1f2937;
+        font-size: 15px;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+        .info-value.empty {
+            color: #9ca3af;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+    /* ==============================
+       FOOTER
+       ============================== */
+
+    .details-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-custom {
+        min-width: 120px;
+        height: 43px;
+        padding: 9px 18px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+
+    .btn-back {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+
+        .btn-back:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.20);
+    }
+
+        .btn-edit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(245, 158, 11, 0.28);
+            color: #fff;
+        }
+
+    /* ==============================
+       RESPONSIVE
+       ============================== */
+
+    @@media (max-width: 768px) {
+
+        .guest-details-page {
+            padding: 5px 0 30px;
+        }
+
+        .page-header-custom {
+            align-items: flex-start;
+        }
+
+        .page-header-text h2 {
+            font-size: 22px;
+        }
+
+        .card-header-custom {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 18px;
+        }
+
+        .card-body-custom {
+            padding: 22px 18px;
+        }
+
+        .profile-section {
+            align-items: flex-start;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details-footer {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn-custom {
+            width: 100%;
+        }
+
+        .back-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+
+<div class="guest-details-page">
+
+    <!-- ==============================
+         PAGE HEADER
+         ============================== -->
+
+    <div class="page-header-custom">
+
+        <div class="page-header-left">
+
+            <div class="page-header-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="page-header-text">
+
+                <h2>
+                    Chi tiết khách hàng
+                </h2>
+
+                <p>
+                    Xem thông tin chi tiết của khách hàng
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a href="@Url.Action("Index", "Guest")"
+           class="back-button">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Quay lại danh sách
+
+        </a>
+
+    </div>
+
+
+    <!-- ==============================
+         ERROR MESSAGE
+         ============================== -->
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="error-box">
+
+            <div class="error-box-icon">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+            </div>
+
+            <div>
+                @ViewBag.Error
+            </div>
+
+        </div>
+    }
+
+
+    @if (Model != null)
+    {
+        <!-- ==============================
+             DETAILS CARD
+             ============================== -->
+
+        <div class="details-card">
+
+            <!-- CARD HEADER -->
+
+            <div class="card-header-custom">
+
+                <h3 class="card-header-title">
+
+                    <i class="fa-solid fa-address-card"></i>
+
+                    Thông tin khách hàng
+
+                </h3>
+
+
+                <div class="customer-code">
+
+                    <i class="fa-solid fa-fingerprint"></i>
+
+                    @Model.GuestId
+
+                </div>
+
+            </div>
+
+
+            <!-- CARD BODY -->
+
+            <div class="card-body-custom">
+
+                <!-- ==========================
+                     PROFILE
+                     ========================== -->
+
+                <div class="profile-section">
+
+                    <div class="profile-avatar">
+
+                        @if (!string.IsNullOrWhiteSpace(Model.FullName))
+                        {
+                            @Model.FullName.Substring(0, 1).ToUpper()
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-user"></i>
+                        }
+
+                    </div>
+
+
+                    <div class="profile-info">
+
+                        <h3>
+                            @Model.FullName
+                        </h3>
+
+                        <p>
+                            Khách hàng của hệ thống
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==========================
+                     INFORMATION
+                     ========================== -->
+
+                <div class="info-grid">
+
+                    <!-- GUEST ID -->
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+
+                            <i class="fa-solid fa-fingerprint"></i>
+
+                            Mã khách hàng
+
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.GuestId
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            Họ và tên
+
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.FullName
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+
+                            <i class="fa-solid fa-phone"></i>
+
+                            Số điện thoại
+
+                        </div>
+
+                        @if (string.IsNullOrWhiteSpace(Model.Phone))
+                        {
+                            <div class="info-value empty">
+                                Chưa cập nhật
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="info-value">
+                                @Model.Phone
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            Email
+
+                        </div>
+
+                        @if (string.IsNullOrWhiteSpace(Model.Email))
+                        {
+                            <div class="info-value empty">
+                                Chưa cập nhật
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="info-value">
+                                @Model.Email
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <!-- NATIONAL ID -->
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+
+                            <i class="fa-solid fa-id-card"></i>
+
+                            CCCD / CMND
+
+                        </div>
+
+                        @if (string.IsNullOrWhiteSpace(Model.NationalId))
+                        {
+                            <div class="info-value empty">
+                                Chưa cập nhật
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="info-value">
+                                @Model.NationalId
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==========================
+                     FOOTER ACTIONS
+                     ========================== -->
+
+                <div class="details-footer">
+
+                    <a href="@Url.Action(
+                        "Index",
+                        "Guest"
+                    )"
+                       class="btn-custom btn-back">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Quay lại
+
+                    </a>
+
+
+                    <a href="@Url.Action(
+                        "Edit",
+                        "Guest",
+                        new
+                        {
+                            id = Model.GuestId
+                        }
+                    )"
+                       class="btn-custom btn-edit">
+
+                        <i class="fa-solid fa-pen-to-square"></i>
+
+                        Chỉnh sửa
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>

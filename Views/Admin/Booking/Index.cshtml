@@ -1,0 +1,892 @@
+﻿@model IEnumerable<QuanLyKhachSan.Models.Booking>
+
+@{
+    ViewBag.Title = "Quản lý đặt phòng";
+}
+
+<style>
+    .booking-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+    /* ==============================
+       HEADER
+       ============================== */
+
+    .page-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-header-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 6px 16px rgba(124, 58, 237, 0.22);
+    }
+
+    .page-header-text h2 {
+        margin: 0 0 5px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-header-text p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* ==============================
+       CARD
+       ============================== */
+
+    .booking-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .card-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fafafa;
+        flex-wrap: wrap;
+    }
+
+    .booking-count {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .booking-count i {
+            color: #7c3aed;
+        }
+
+    .booking-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 25px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: #ede9fe;
+        color: #6d28d9;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ==============================
+       SEARCH
+       ============================== */
+
+    .search-wrapper {
+        position: relative;
+        width: 320px;
+    }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+    .search-input {
+        width: 100%;
+        height: 40px;
+        padding: 8px 13px 8px 37px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #374151;
+        font-size: 13px;
+        outline: none;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+        .search-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.10);
+        }
+
+    /* ==============================
+       TABLE
+       ============================== */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .booking-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: collapse;
+    }
+
+        .booking-table thead th {
+            padding: 14px 16px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+            white-space: nowrap;
+        }
+
+        .booking-table tbody td {
+            padding: 15px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .booking-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+            .booking-table tbody tr:hover {
+                background: #fafafa;
+            }
+
+            .booking-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+    /* ==============================
+       BOOKING ID
+       ============================== */
+
+    .booking-id {
+        display: inline-block;
+        max-width: 145px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        color: #374151;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+        font-weight: 600;
+        word-break: break-all;
+    }
+
+    /* ==============================
+       GUEST
+       ============================== */
+
+    .guest-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .guest-avatar {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #ede9fe;
+        color: #6d28d9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .guest-name {
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    .guest-id {
+        margin-top: 2px;
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+    /* ==============================
+       ROOM
+       ============================== */
+
+    .room-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ==============================
+       DATE
+       ============================== */
+
+    .date-value {
+        color: #374151;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .date-label {
+        display: block;
+        margin-bottom: 2px;
+        color: #9ca3af;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    /* ==============================
+       MONEY
+       ============================== */
+
+    .amount {
+        color: #059669;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* ==============================
+       STATUS
+       ============================== */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-confirmed {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .status-checked-in {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-checked-out {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .status-cancelled {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .status-default {
+        background: #fefce8;
+        color: #a16207;
+    }
+
+    /* ==============================
+       ACTIONS
+       ============================== */
+
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        font-size: 13px;
+    }
+
+    .action-details {
+        border: 1px solid #dbeafe;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+        .action-details:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+    /* ==============================
+       EMPTY
+       ============================== */
+
+    .empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .empty-state h4 {
+        margin: 0 0 6px;
+        color: #374151;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    /* ==============================
+       ERROR
+       ============================== */
+
+    .error-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 20px 22px 0;
+        padding: 13px 15px;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-size: 13px;
+    }
+
+        .error-box i {
+            color: #dc2626;
+            margin-top: 2px;
+        }
+
+    /* ==============================
+       RESPONSIVE
+       ============================== */
+
+    @@media (max-width: 768px) {
+
+        .booking-page {
+            padding: 5px 0 30px;
+        }
+
+        .page-header-text h2 {
+            font-size: 22px;
+        }
+
+        .card-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .search-wrapper {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="booking-page">
+
+    <!-- ==============================
+         HEADER
+         ============================== -->
+
+    <div class="page-header-custom">
+
+        <div class="page-header-left">
+
+            <div class="page-header-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+
+            <div class="page-header-text">
+
+                <h2>
+                    Quản lý đặt phòng
+                </h2>
+
+                <p>
+                    Theo dõi các lượt đặt phòng của khách hàng
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         MAIN CARD
+         ============================== -->
+
+    <div class="booking-card">
+
+        <div class="card-toolbar">
+
+            <div class="booking-count">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                Tổng số đặt phòng:
+
+                <span class="booking-count-badge"
+                      id="bookingCount">
+
+                    @(Model == null ? 0 : Model.Count())
+
+                </span>
+
+            </div>
+
+
+            <div class="search-wrapper">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input type="text"
+                       id="bookingSearch"
+                       class="search-input"
+                       placeholder="Tìm mã booking, khách hàng, phòng..." />
+
+            </div>
+
+        </div>
+
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="error-box">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                <span>
+                    @ViewBag.Error
+                </span>
+
+            </div>
+        }
+
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-wrapper">
+
+                <table class="booking-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Mã đặt phòng
+                            </th>
+
+                            <th>
+                                Khách hàng
+                            </th>
+
+                            <th>
+                                Phòng
+                            </th>
+
+                            <th>
+                                Nhận phòng
+                            </th>
+
+                            <th>
+                                Trả phòng
+                            </th>
+
+                            <th>
+                                Tổng tiền
+                            </th>
+
+                            <th>
+                                Trạng thái
+                            </th>
+
+                            <th>
+                                Thao tác
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="bookingTableBody">
+
+                        @foreach (var booking in Model)
+                        {
+                            var status =
+                                (booking.Status ?? "")
+                                .Trim()
+                                .ToUpperInvariant();
+
+                            var statusClass = "status-default";
+
+                            if (status == "CONFIRMED")
+                            {
+                                statusClass = "status-confirmed";
+                            }
+                            else if (
+                                status == "CHECKED_IN" ||
+                                status == "CHECK-IN" ||
+                                status == "CHECKEDIN"
+                            )
+                            {
+                                statusClass = "status-checked-in";
+                            }
+                            else if (
+                                status == "CHECKED_OUT" ||
+                                status == "CHECK-OUT" ||
+                                status == "CHECKEDOUT"
+                            )
+                            {
+                                statusClass = "status-checked-out";
+                            }
+                            else if (
+                                status == "CANCELLED" ||
+                                status == "CANCELED"
+                            )
+                            {
+                                statusClass = "status-cancelled";
+                            }
+
+
+                            var guestInitial = "?";
+
+                            if (!string.IsNullOrWhiteSpace(
+                                booking.GuestName))
+                            {
+                                guestInitial =
+                                    booking.GuestName
+                                        .Trim()
+                                        .Substring(0, 1)
+                                        .ToUpper();
+                            }
+
+
+                            <tr class="booking-row">
+
+                                <!-- BOOKING ID -->
+
+                                <td data-search="@booking.BookingId">
+
+                                    <span class="booking-id">
+
+                                        @booking.BookingId
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- GUEST -->
+
+                                <td data-search="@booking.GuestName @booking.GuestId">
+
+                                    <div class="guest-info">
+
+                                        <div class="guest-avatar">
+
+                                            @guestInitial
+
+                                        </div>
+
+                                        <div>
+
+                                            <div class="guest-name">
+
+                                                @booking.GuestName
+
+                                            </div>
+
+                                            <div class="guest-id">
+
+                                                @booking.GuestId
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- ROOM -->
+
+                                <td data-search="@booking.RoomNumber">
+
+                                    <span class="room-badge">
+
+                                        <i class="fa-solid fa-door-open"></i>
+
+                                        Phòng @booking.RoomNumber
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- CHECK IN -->
+
+                                <td data-search="@booking.CheckInDate">
+
+                                    <span class="date-label">
+                                        Nhận phòng
+                                    </span>
+
+                                    <span class="date-value">
+
+                                        @booking.CheckInDate.ToString("dd/MM/yyyy")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- CHECK OUT -->
+
+                                <td data-search="@booking.CheckOutDate">
+
+                                    <span class="date-label">
+                                        Trả phòng
+                                    </span>
+
+                                    <span class="date-value">
+
+                                        @booking.CheckOutDate.ToString("dd/MM/yyyy")
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- TOTAL -->
+
+                                <td>
+
+                                    <span class="amount">
+
+                                        @booking.TotalAmount.ToString("#,##0") ₫
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td data-search="@booking.Status">
+
+                                    <span class="status-badge @statusClass">
+
+                                        <span class="status-dot"></span>
+
+                                        @(
+                                            string.IsNullOrWhiteSpace(
+                                                booking.Status)
+                                            ? "Không xác định"
+                                            : booking.Status
+                                        )
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTION -->
+
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <a href="@Url.Action(
+                                            "Details",
+                                            "Booking",
+                                            new
+                                            {
+                                                bookingId =
+                                                    booking.BookingId,
+                                                checkInDate =
+                                                    booking.CheckInDate
+                                                        .ToString("yyyy-MM-dd")
+                                            }
+                                        )"
+                                           class="action-btn action-details"
+                                           title="Xem chi tiết">
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="fa-solid fa-calendar-xmark"></i>
+
+                </div>
+
+                <h4>
+                    Chưa có đặt phòng
+                </h4>
+
+                <p>
+                    Hiện tại chưa có dữ liệu đặt phòng trong hệ thống.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var searchInput =
+            document.getElementById("bookingSearch");
+
+        var rows =
+            document.querySelectorAll(".booking-row");
+
+        var countBadge =
+            document.getElementById("bookingCount");
+
+
+        if (!searchInput) {
+            return;
+        }
+
+
+        searchInput.addEventListener("input", function () {
+
+            var keyword =
+                this.value
+                    .toLowerCase()
+                    .trim();
+
+            var visibleCount = 0;
+
+
+            rows.forEach(function (row) {
+
+                var searchText =
+                    row.innerText
+                        .toLowerCase();
+
+
+                if (
+                    keyword === "" ||
+                    searchText.indexOf(keyword) !== -1
+                ) {
+                    row.style.display = "";
+                    visibleCount++;
+                }
+                else {
+                    row.style.display = "none";
+                }
+
+            });
+
+
+            if (countBadge) {
+
+                countBadge.textContent =
+                    visibleCount;
+
+            }
+
+        });
+
+    });
+
+</script>

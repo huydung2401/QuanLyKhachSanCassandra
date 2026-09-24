@@ -1,0 +1,806 @@
+﻿@model QuanLyKhachSan.Models.UserBookingSearchViewModel
+
+@{
+    ViewBag.Title = "Tìm phòng";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+
+    .search-page {
+        min-height: calc(100vh - 80px);
+        background: #f7f8fa;
+        padding: 55px 20px 80px;
+    }
+
+    .search-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .search-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+        .search-header .label {
+            display: block;
+            color: #b18b52;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .search-header h1 {
+            margin: 0 0 12px;
+            color: #182536;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .search-header p {
+            margin: 0;
+            color: #777;
+            font-size: 16px;
+        }
+
+
+    /* =====================================================
+       SEARCH CARD
+       ===================================================== */
+
+    .search-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 35px rgba(0,0,0,.07);
+        padding: 30px;
+        margin-bottom: 35px;
+    }
+
+    .search-form {
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr .8fr auto;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .form-group {
+        margin: 0;
+    }
+
+        .form-group label {
+            display: block;
+            color: #182536;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+    .form-control {
+        width: 100%;
+        height: 48px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0 14px;
+        color: #333;
+        background: #fff;
+        box-shadow: none;
+    }
+
+        .form-control:focus {
+            border-color: #b18b52;
+            box-shadow: 0 0 0 2px rgba(177,139,82,.12);
+        }
+
+
+    /* =====================================================
+       BUTTON
+       ===================================================== */
+
+    .search-button {
+        height: 48px;
+        padding: 0 28px;
+        border: none;
+        border-radius: 8px;
+        background: #182536;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .search-button:hover {
+            background: #b18b52;
+            color: #fff;
+        }
+
+
+    /* =====================================================
+       ERROR
+       ===================================================== */
+
+    .search-error {
+        margin-bottom: 25px;
+        padding: 15px 18px;
+        background: #fff1f1;
+        border: 1px solid #f2cccc;
+        border-radius: 8px;
+        color: #b42318;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       RESULT HEADER
+       ===================================================== */
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .result-header h2 {
+            margin: 0;
+            color: #182536;
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+    .result-count {
+        color: #777;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       ROOM GRID
+       ===================================================== */
+
+    .room-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+
+    /* =====================================================
+       ROOM CARD
+       ===================================================== */
+
+    .room-card {
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(0,0,0,.06);
+        transition: .2s;
+    }
+
+        .room-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 35px rgba(0,0,0,.10);
+        }
+
+
+    /* =====================================================
+       ROOM IMAGE
+       ===================================================== */
+
+    .room-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 210px;
+        background: #f1f1f1;
+        overflow: hidden;
+    }
+
+    .room-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .room-number-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 7px 11px;
+        background: rgba(24,37,54,.9);
+        color: #fff;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       ROOM CONTENT
+       ===================================================== */
+
+    .room-content {
+        padding: 20px;
+    }
+
+        .room-content h3 {
+            margin: 0 0 8px;
+            color: #182536;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+    .room-type {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .room-price {
+        color: #b18b52;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 17px;
+    }
+
+        .room-price small {
+            color: #888;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+
+    /* =====================================================
+       BOOK BUTTON
+       ===================================================== */
+
+    .book-room-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 44px;
+        border-radius: 7px;
+        background: #182536;
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+        .book-room-button:hover {
+            background: #b18b52;
+            color: #fff;
+            text-decoration: none;
+        }
+
+
+    /* =====================================================
+       EMPTY RESULT
+       ===================================================== */
+
+    .empty-result {
+        background: #fff;
+        border-radius: 14px;
+        padding: 55px 25px;
+        text-align: center;
+        box-shadow: 0 8px 28px rgba(0,0,0,.05);
+    }
+
+        .empty-result i {
+            color: #bbb;
+            font-size: 48px;
+            margin-bottom: 18px;
+        }
+
+        .empty-result h3 {
+            margin: 0 0 10px;
+            color: #182536;
+            font-size: 21px;
+        }
+
+        .empty-result p {
+            margin: 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 900px) {
+
+        .search-form {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .search-button {
+            width: 100%;
+        }
+
+        .room-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .search-page {
+            padding: 35px 15px 60px;
+        }
+
+        .search-header h1 {
+            font-size: 29px;
+        }
+
+        .search-card {
+            padding: 20px;
+        }
+
+        .search-form {
+            grid-template-columns: 1fr;
+        }
+
+        .room-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+    }
+</style>
+
+
+<div class="search-page">
+
+    <div class="search-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="search-header">
+
+            <span class="label">
+                SUNRISE HOTEL
+            </span>
+
+            <h1>
+                Tìm phòng
+            </h1>
+
+            <p>
+                Chọn ngày lưu trú và số khách để tìm phòng phù hợp.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             SEARCH FORM
+             ===================================================== -->
+
+        <div class="search-card">
+
+            @using (Html.BeginForm(
+                "Search",
+                "UserBooking",
+                FormMethod.Post,
+                new
+                {
+                    @class = "search-form"
+                }
+            ))
+            {
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- NGÀY NHẬN -->
+
+                <div class="form-group">
+
+                    <label for="CheckIn">
+                        Ngày nhận phòng
+                    </label>
+
+                    <input type="date"
+                           id="CheckIn"
+                           name="CheckIn"
+                           class="form-control"
+                           value="@Model.CheckIn.ToString("yyyy-MM-dd")"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           required />
+
+                </div>
+
+
+                <!-- NGÀY TRẢ -->
+
+                <div class="form-group">
+
+                    <label for="CheckOut">
+                        Ngày trả phòng
+                    </label>
+
+                    <input type="date"
+                           id="CheckOut"
+                           name="CheckOut"
+                           class="form-control"
+                           value="@Model.CheckOut.ToString("yyyy-MM-dd")"
+                           min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                           required />
+
+                </div>
+
+
+                <!-- SỐ KHÁCH -->
+
+                <div class="form-group">
+
+                    <label for="Guests">
+                        Số khách
+                    </label>
+
+                    <select id="Guests"
+                            name="Guests"
+                            class="form-control">
+
+                        @for (int i = 1; i <= 10; i++)
+                        {
+                            <option value="@i"
+                                    @(Model.Guests == i ? "selected" : "")>
+                                @i khách
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="form-group">
+
+                    <button type="submit"
+                            class="search-button">
+
+                        <i class="fa-solid fa-magnifying-glass"
+                           style="margin-right:8px;"></i>
+
+                        TÌM PHÒNG
+
+                    </button>
+
+                </div>
+
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             ERROR
+             ===================================================== -->
+
+        @if (!string.IsNullOrWhiteSpace(
+            Model.ErrorMessage))
+        {
+            <div class="search-error">
+
+                <i class="fa-solid fa-circle-exclamation"
+                   style="margin-right:7px;"></i>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <!-- =====================================================
+             KẾT QUẢ
+             ===================================================== -->
+
+        @if (Model.AvailableRooms != null &&
+             Model.AvailableRooms.Count > 0)
+        {
+
+            <div class="result-header">
+
+                <h2>
+                    Phòng phù hợp
+                </h2>
+
+                <span class="result-count">
+
+                    Tìm thấy
+                    <strong>
+                        @Model.AvailableRooms.Count
+                    </strong>
+                    phòng
+
+                </span>
+
+            </div>
+
+
+            <div class="room-grid">
+
+                @foreach (var room in Model.AvailableRooms)
+                {
+
+                    /*
+                     * Xử lý ảnh phòng
+                     */
+
+                    var roomImage =
+                        room.ImageUrl;
+
+
+                    if (string.IsNullOrWhiteSpace(
+                        roomImage))
+                    {
+                        roomImage =
+                            Url.Content(
+                                "~/Content/Images/Rooms/HOTEL001_"
+                                + room.RoomNumber
+                                + ".jpg"
+                            );
+                    }
+                    else if (roomImage.StartsWith("~/"))
+                    {
+                        roomImage =
+                            Url.Content(
+                                roomImage
+                            );
+                    }
+                    else if (
+                        roomImage.StartsWith(
+                            "Content/",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        roomImage =
+                            Url.Content(
+                                "~/" + roomImage
+                            );
+                    }
+                    else if (
+                        !roomImage.StartsWith("/")
+                        &&
+                        !roomImage.StartsWith(
+                            "http://",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                        &&
+                        !roomImage.StartsWith(
+                            "https://",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                        &&
+                        !roomImage.Contains("/")
+                    )
+                    {
+                        roomImage =
+                            Url.Content(
+                                "~/Content/Images/Rooms/"
+                                + roomImage
+                            );
+                    }
+
+
+                    <div class="room-card">
+
+
+                        <!-- ẢNH PHÒNG -->
+
+                        <div class="room-image-wrapper">
+
+                            <img src="@roomImage"
+                                 class="room-image"
+                                 alt="Phòng @room.RoomNumber"
+                                 onerror="
+                                    this.onerror=null;
+                                    this.src='@Url.Content("~/Content/Images/Rooms/HOTEL001_" + room.RoomNumber + ".jpg")';
+                                 " />
+
+
+                            <span class="room-number-badge">
+
+                                PHÒNG @room.RoomNumber
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- THÔNG TIN PHÒNG -->
+
+                        <div class="room-content">
+
+                            <h3>
+                                Phòng @room.RoomNumber
+                            </h3>
+
+
+                            <div class="room-type">
+
+                                @room.RoomType
+
+                            </div>
+
+
+                            <div class="room-price">
+
+                                @room.PricePerNight.ToString("N0") ₫
+
+                                <small>
+                                    / đêm
+                                </small>
+
+                            </div>
+
+
+                            <a href="@Url.Action(
+                                        "Index",
+                                        "UserBooking",
+                                        new
+                                        {
+                                            roomNumber =
+                                                room.RoomNumber
+                                        }
+                                    )"
+                               class="book-room-button">
+
+                                ĐẶT PHÒNG
+
+                                <i class="fa-solid fa-arrow-right"
+                                   style="margin-left:8px;"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+        else if (
+            !string.IsNullOrWhiteSpace(
+                Model.ErrorMessage))
+        {
+
+            <div class="empty-result">
+
+                <i class="fa-solid fa-bed"></i>
+
+                <h3>
+                    Không có phòng phù hợp
+                </h3>
+
+                <p>
+                    Vui lòng thử ngày khác hoặc thay đổi số lượng khách.
+                </p>
+
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            var checkIn =
+                document.getElementById(
+                    "CheckIn"
+                );
+
+            var checkOut =
+                document.getElementById(
+                    "CheckOut"
+                );
+
+
+            if (!checkIn || !checkOut)
+            {
+                return;
+            }
+
+
+            function updateCheckoutMin()
+            {
+                if (!checkIn.value)
+                {
+                    return;
+                }
+
+
+                var date =
+                    new Date(
+                        checkIn.value
+                    );
+
+
+                date.setDate(
+                    date.getDate() + 1
+                );
+
+
+                var year =
+                    date.getFullYear();
+
+
+                var month =
+                    String(
+                        date.getMonth() + 1
+                    ).padStart(2, "0");
+
+
+                var day =
+                    String(
+                        date.getDate()
+                    ).padStart(2, "0");
+
+
+                var minDate =
+                    year +
+                    "-" +
+                    month +
+                    "-" +
+                    day;
+
+
+                checkOut.min =
+                    minDate;
+
+
+                if (
+                    checkOut.value &&
+                    checkOut.value < minDate
+                )
+                {
+                    checkOut.value =
+                        minDate;
+                }
+            }
+
+
+            checkIn.addEventListener(
+                "change",
+                updateCheckoutMin
+            );
+
+
+            updateCheckoutMin();
+
+        }
+    );
+
+</script>

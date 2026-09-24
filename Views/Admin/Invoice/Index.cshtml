@@ -1,0 +1,1021 @@
+﻿@model IEnumerable<QuanLyKhachSan.Models.Invoice>
+
+@{
+    ViewBag.Title = "Quản lý hóa đơn";
+}
+
+<style>
+    /* =====================================================
+       PAGE
+       ===================================================== */
+
+    .invoice-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .page-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-header-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.22);
+    }
+
+    .page-header-text h2 {
+        margin: 0 0 5px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-header-text p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       CARD
+       ===================================================== */
+
+    .invoice-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .card-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fafafa;
+        flex-wrap: wrap;
+    }
+
+    .invoice-count {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .invoice-count i {
+            color: #059669;
+        }
+
+    .invoice-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 25px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: #d1fae5;
+        color: #047857;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       SEARCH
+       ===================================================== */
+
+    .search-wrapper {
+        position: relative;
+        width: 330px;
+    }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+    .search-input {
+        width: 100%;
+        height: 40px;
+        padding: 8px 13px 8px 37px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #374151;
+        font-size: 13px;
+        outline: none;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+        .search-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.10);
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+
+    /* =====================================================
+       TABLE
+       ===================================================== */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .invoice-table {
+        width: 100%;
+        min-width: 1150px;
+        border-collapse: collapse;
+    }
+
+        .invoice-table thead th {
+            padding: 14px 16px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+            white-space: nowrap;
+        }
+
+        .invoice-table tbody td {
+            padding: 15px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .invoice-table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+            .invoice-table tbody tr:hover {
+                background: #fafafa;
+            }
+
+            .invoice-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+
+    /* =====================================================
+       INVOICE ID
+       ===================================================== */
+
+    .invoice-id {
+        display: inline-block;
+        max-width: 145px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #ecfdf5;
+        color: #047857;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+        font-weight: 600;
+        word-break: break-all;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       BOOKING ID
+       ===================================================== */
+
+    .booking-id {
+        display: inline-block;
+        max-width: 145px;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        color: #4b5563;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        word-break: break-all;
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       GUEST
+       ===================================================== */
+
+    .guest-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 150px;
+    }
+
+    .guest-avatar {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #d1fae5;
+        color: #047857;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .guest-name {
+        color: #1f2937;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .guest-id {
+        margin-top: 2px;
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       ROOM
+       ===================================================== */
+
+    .room-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+       AMOUNT
+       ===================================================== */
+
+    .amount {
+        color: #059669;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .amount-label {
+        display: block;
+        margin-bottom: 2px;
+        color: #9ca3af;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+    }
+
+
+    /* =====================================================
+       PAYMENT STATUS
+       ===================================================== */
+
+    .payment-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .payment-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .payment-paid {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .payment-unpaid {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .payment-pending {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    .payment-cancelled {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .payment-default {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+
+    /* =====================================================
+       DATE
+       ===================================================== */
+
+    .issued-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #4b5563;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+        .issued-date i {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+    /* =====================================================
+       ACTION
+       ===================================================== */
+
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        font-size: 13px;
+    }
+
+    .action-details {
+        border: 1px solid #dbeafe;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+        .action-details:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+
+    /* =====================================================
+       ERROR
+       ===================================================== */
+
+    .error-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 20px 22px 0;
+        padding: 13px 15px;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-size: 13px;
+    }
+
+        .error-box i {
+            color: #dc2626;
+            margin-top: 2px;
+        }
+
+
+    /* =====================================================
+       EMPTY
+       ===================================================== */
+
+    .empty-state {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .empty-state h4 {
+        margin: 0 0 6px;
+        color: #374151;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @@media (max-width: 768px) {
+
+        .invoice-page {
+            padding: 5px 0 30px;
+        }
+
+        .page-header-text h2 {
+            font-size: 22px;
+        }
+
+        .card-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .search-wrapper {
+            width: 100%;
+        }
+
+        .invoice-table {
+            min-width: 1050px;
+        }
+    }
+</style>
+
+
+<div class="invoice-page">
+
+    <!-- =================================================
+         HEADER
+         ================================================= -->
+
+    <div class="page-header-custom">
+
+        <div class="page-header-left">
+
+            <div class="page-header-icon">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+
+            <div class="page-header-text">
+
+                <h2>
+                    Quản lý hóa đơn
+                </h2>
+
+                <p>
+                    Quản lý hóa đơn tiền phòng của khách hàng
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         MAIN CARD
+         ================================================= -->
+
+    <div class="invoice-card">
+
+        <!-- =================================================
+             TOOLBAR
+             ================================================= -->
+
+        <div class="card-toolbar">
+
+            <div class="invoice-count">
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                <span>
+                    Tổng số hóa đơn:
+                </span>
+
+                <span class="invoice-count-badge"
+                      id="invoiceCount">
+
+                    @(Model == null ? 0 : Model.Count())
+
+                </span>
+
+            </div>
+
+
+            <div class="search-wrapper">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input type="text"
+                       id="invoiceSearch"
+                       class="search-input"
+                       placeholder="Tìm mã hóa đơn, booking, khách hàng..." />
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ERROR
+             ================================================= -->
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="error-box">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                <span>
+                    @ViewBag.Error
+                </span>
+
+            </div>
+        }
+
+
+        <!-- =================================================
+             TABLE
+             ================================================= -->
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-wrapper">
+
+                <table class="invoice-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Mã hóa đơn
+                            </th>
+
+                            <th>
+                                Booking
+                            </th>
+
+                            <th>
+                                Khách hàng
+                            </th>
+
+                            <th>
+                                Phòng
+                            </th>
+
+                            <th>
+                                Tiền phòng
+                            </th>
+
+                            <th>
+                                Tổng tiền
+                            </th>
+
+                            <th>
+                                Thanh toán
+                            </th>
+
+                            <th>
+                                Ngày lập
+                            </th>
+
+                            <th>
+                                Thao tác
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="invoiceTableBody">
+
+                        @foreach (var invoice in Model)
+                        {
+                            var paymentStatus =
+                                (invoice.PaymentStatus ?? "")
+                                .Trim()
+                                .ToUpperInvariant();
+
+                            var paymentClass =
+                                "payment-default";
+
+                            var paymentText =
+                                string.IsNullOrWhiteSpace(
+                                    invoice.PaymentStatus)
+                                ? "Không xác định"
+                                : invoice.PaymentStatus;
+
+
+                            if (
+                                paymentStatus == "PAID" ||
+                                paymentStatus == "PAYMENT_SUCCESS"
+                            )
+                            {
+                                paymentClass =
+                                    "payment-paid";
+
+                                paymentText =
+                                    "Đã thanh toán";
+                            }
+                            else if (
+                                paymentStatus == "UNPAID"
+                            )
+                            {
+                                paymentClass =
+                                    "payment-unpaid";
+
+                                paymentText =
+                                    "Chưa thanh toán";
+                            }
+                            else if (
+                                paymentStatus == "PENDING"
+                            )
+                            {
+                                paymentClass =
+                                    "payment-pending";
+
+                                paymentText =
+                                    "Đang chờ";
+                            }
+                            else if (
+                                paymentStatus == "CANCELLED" ||
+                                paymentStatus == "CANCELED"
+                            )
+                            {
+                                paymentClass =
+                                    "payment-cancelled";
+
+                                paymentText =
+                                    "Đã hủy";
+                            }
+
+
+                            var guestInitial = "?";
+
+                            if (
+                                !string.IsNullOrWhiteSpace(
+                                    invoice.GuestName))
+                            {
+                                guestInitial =
+                                    invoice.GuestName
+                                        .Trim()
+                                        .Substring(0, 1)
+                                        .ToUpper();
+                            }
+
+
+                            <tr class="invoice-row">
+
+                                <!-- =================================================
+         INVOICE ID
+         ================================================= -->
+
+                                <td data-search="@invoice.InvoiceId">
+
+                                    <span class="invoice-id">
+                                        @invoice.InvoiceId
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         BOOKING
+         ================================================= -->
+
+                                <td data-search="@invoice.BookingId">
+
+                                    <span class="booking-id">
+                                        @invoice.BookingId
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         GUEST
+         ================================================= -->
+
+                                <td data-search="@invoice.GuestName @invoice.GuestId">
+
+                                    <div class="guest-info">
+
+                                        <div class="guest-avatar">
+                                            @guestInitial
+                                        </div>
+
+                                        <div>
+
+                                            <div class="guest-name">
+                                                @invoice.GuestName
+                                            </div>
+
+                                            <div class="guest-id">
+                                                @invoice.GuestId
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- =================================================
+         ROOM
+         ================================================= -->
+
+                                <td data-search="@invoice.RoomNumber">
+
+                                    <span class="room-badge">
+
+                                        <i class="fa-solid fa-door-open"></i>
+
+                                        Phòng @invoice.RoomNumber
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         ROOM CHARGE
+         ================================================= -->
+
+                                <td>
+
+                                    <span class="amount">
+                                        @invoice.RoomCharge.ToString("#,##0") ₫
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         TOTAL
+         ================================================= -->
+
+                                <td>
+
+                                    <span class="amount-label">
+                                        Tổng cộng
+                                    </span>
+
+                                    <span class="amount">
+                                        @invoice.TotalAmount.ToString("#,##0") ₫
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         PAYMENT STATUS
+         ================================================= -->
+
+                                <td data-search="@invoice.PaymentStatus">
+
+                                    <span class="payment-status @paymentClass">
+
+                                        <span class="payment-dot"></span>
+
+                                        @paymentText
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =================================================
+         ISSUED DATE
+         ================================================= -->
+                                @{
+                                    var issuedAtUtc = DateTime.SpecifyKind(
+                                        invoice.IssuedAt,
+                                        DateTimeKind.Utc
+                                    );
+
+                                    var issuedAtLocal = issuedAtUtc.ToLocalTime();
+
+                                    var issuedAtText = issuedAtLocal.ToString(
+                                        "dd/MM/yyyy HH:mm"
+                                    );
+                                }
+
+                                <td>
+                                    <span class="issued-date">
+
+                                        <i class="fa-regular fa-calendar-days"></i>
+
+                                        @issuedAtText
+
+                                    </span>
+                                </td>
+
+
+                                <!-- =================================================
+         ACTION
+         ================================================= -->
+
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <a href="@Url.Action(
+                                            "Details",
+                                            "Invoice",
+                                            new
+                                            {
+                                                bookingId =
+                                                    invoice.BookingId,
+                                                invoiceId =
+                                                    invoice.InvoiceId
+                                            }
+                                        )"
+                                           class="action-btn action-details"
+                                           title="Xem hóa đơn">
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- =================================================
+                 EMPTY STATE
+                 ================================================= -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                </div>
+
+                <h4>
+                    Chưa có hóa đơn
+                </h4>
+
+                <p>
+                    Hiện tại chưa có hóa đơn tiền phòng trong hệ thống.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var searchInput =
+            document.getElementById("invoiceSearch");
+
+        var rows =
+            document.querySelectorAll(".invoice-row");
+
+        var countBadge =
+            document.getElementById("invoiceCount");
+
+
+        if (!searchInput) {
+            return;
+        }
+
+
+        searchInput.addEventListener("input", function () {
+
+            var keyword =
+                this.value
+                    .toLowerCase()
+                    .trim();
+
+            var visibleCount = 0;
+
+
+            rows.forEach(function (row) {
+
+                var searchText =
+                    row.innerText
+                        .toLowerCase();
+
+
+                if (
+                    keyword === "" ||
+                    searchText.indexOf(keyword) !== -1
+                ) {
+
+                    row.style.display = "";
+
+                    visibleCount++;
+
+                }
+                else {
+
+                    row.style.display = "none";
+
+                }
+
+            });
+
+
+            if (countBadge) {
+
+                countBadge.textContent =
+                    visibleCount;
+
+            }
+
+        });
+
+    });
+
+</script>

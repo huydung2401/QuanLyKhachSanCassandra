@@ -1,0 +1,120 @@
+﻿@model QuanLyKhachSan.Models.Hotel
+
+@{
+    ViewBag.Title = "Sửa khách sạn";
+}
+
+<div class="container">
+
+    <h2>Sửa khách sạn</h2>
+
+    <hr />
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "alert alert-danger" })
+
+        @Html.HiddenFor(m => m.HotelId)
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Mã khách sạn
+            </label>
+
+            <input type="text"
+                   class="form-control"
+                   value="@Model.HotelId"
+                   disabled />
+
+        </div>
+
+        <div class="mb-3">
+
+            @Html.LabelFor(
+                m => m.HotelName,
+                new { @class = "form-label" })
+
+            @Html.TextBoxFor(
+                m => m.HotelName,
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(
+                m => m.HotelName,
+                "",
+                new { @class = "text-danger" })
+
+        </div>
+
+        <div class="mb-3">
+
+            @Html.LabelFor(
+                m => m.Address,
+                new { @class = "form-label" })
+
+            @Html.TextBoxFor(
+                m => m.Address,
+                new { @class = "form-control" })
+
+        </div>
+
+        <div class="mb-3">
+
+            @Html.LabelFor(
+                m => m.City,
+                new { @class = "form-label" })
+
+            @Html.TextBoxFor(
+                m => m.City,
+                new { @class = "form-control" })
+
+        </div>
+
+        <div class="mb-3">
+
+            @Html.LabelFor(
+                m => m.StarRating,
+                new { @class = "form-label" })
+
+            @Html.TextBoxFor(
+                m => m.StarRating,
+                new
+                {
+                    @class = "form-control",
+                    type = "number",
+                    min = "1",
+                    max = "5"
+                })
+
+        </div>
+
+        <div class="mb-3">
+
+            @Html.LabelFor(
+                m => m.Phone,
+                new { @class = "form-label" })
+
+            @Html.TextBoxFor(
+                m => m.Phone,
+                new { @class = "form-control" })
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Cập nhật
+        </button>
+
+        @Html.ActionLink(
+            "Hủy",
+            "Index",
+            null,
+            new { @class = "btn btn-secondary ms-2" })
+    }
+
+</div>

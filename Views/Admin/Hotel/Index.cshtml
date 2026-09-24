@@ -1,0 +1,542 @@
+﻿@model QuanLyKhachSan.Models.Hotel
+
+@{
+    ViewBag.Title = "Thông tin khách sạn";
+}
+
+<div class="hotel-page">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="hotel-page-header">
+
+        <div>
+
+            <div class="hotel-breadcrumb">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>/</span>
+
+                <span>Quản lý</span>
+
+                <span>/</span>
+
+                <strong>Khách sạn</strong>
+
+            </div>
+
+
+            <h1 class="hotel-page-title">
+                Thông tin khách sạn
+            </h1>
+
+
+            <p class="hotel-page-subtitle">
+                Quản lý thông tin khách sạn của hệ thống
+            </p>
+
+        </div>
+
+
+        <div class="hotel-header-actions">
+
+            @if (!string.IsNullOrWhiteSpace(Model.HotelId))
+            {
+                <a href="@Url.Action("Edit", "Hotel")"
+                   class="hotel-primary-btn">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                    Chỉnh sửa thông tin
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ALERT
+         ===================================================== -->
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="hotel-alert hotel-alert-success">
+
+            <div class="hotel-alert-icon">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+            <div>
+
+                <strong>Thành công</strong>
+
+                <div>
+                    @TempData["Success"]
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="hotel-alert hotel-alert-danger">
+
+            <div class="hotel-alert-icon">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+            </div>
+
+            <div>
+
+                <strong>Có lỗi xảy ra</strong>
+
+                <div>
+                    @TempData["Error"]
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         HOTEL INFORMATION
+         ===================================================== -->
+
+    @if (string.IsNullOrWhiteSpace(Model.HotelId))
+    {
+        <div class="hotel-empty-state">
+
+            <div class="hotel-empty-icon">
+
+                <i class="fa-solid fa-hotel"></i>
+
+            </div>
+
+            <h3>
+                Chưa có thông tin khách sạn
+            </h3>
+
+            <p>
+                Hệ thống chưa tìm thấy thông tin khách sạn.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="single-hotel-layout">
+
+
+            <!-- =================================================
+                 HOTEL PROFILE
+                 ================================================= -->
+
+            <div class="single-hotel-profile">
+
+
+                <!-- COVER -->
+
+                <div class="single-hotel-cover">
+
+                    <div class="single-hotel-pattern"></div>
+
+
+                    <div class="single-hotel-icon">
+
+                        <i class="fa-solid fa-hotel"></i>
+
+                    </div>
+
+
+                    <div class="single-hotel-cover-title">
+                        HOTEL MANAGEMENT
+                    </div>
+
+                </div>
+
+
+                <!-- PROFILE BODY -->
+
+                <div class="single-hotel-profile-body">
+
+
+                    <div class="single-hotel-id-row">
+
+                        <span class="hotel-id-badge">
+                            @Model.HotelId
+                        </span>
+
+
+                        <span class="hotel-status-badge">
+
+                            <span class="hotel-status-dot"></span>
+
+                            Đang hoạt động
+
+                        </span>
+
+                    </div>
+
+
+                    <h2 class="single-hotel-name">
+                        @Model.HotelName
+                    </h2>
+
+
+                    <div class="hotel-rating">
+
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Model.StarRating)
+                            {
+                                <i class="fa-solid fa-star hotel-star-filled"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-regular fa-star hotel-star-empty"></i>
+                            }
+                        }
+
+                        <span>
+                            @Model.StarRating.0 / 5
+                        </span>
+
+                    </div>
+
+
+                    <div class="single-hotel-description">
+
+                        Đây là khách sạn duy nhất được quản lý
+                        trong hệ thống.
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INFORMATION
+                 ================================================= -->
+
+            <div class="single-hotel-information">
+
+
+                <div class="single-hotel-section-header">
+
+                    <div>
+
+                        <h3>
+                            Thông tin khách sạn
+                        </h3>
+
+                        <p>
+                            Thông tin cơ bản và liên hệ
+                        </p>
+
+                    </div>
+
+
+                    <div class="single-hotel-section-icon">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+                </div>
+
+
+                <div class="single-hotel-info-list">
+
+
+                    <!-- ADDRESS -->
+
+                    <div class="single-hotel-info-item">
+
+                        <div class="single-hotel-info-icon">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="single-hotel-info-label">
+                                Địa chỉ
+                            </div>
+
+                            <div class="single-hotel-info-value">
+                                @Model.Address
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CITY -->
+
+                    <div class="single-hotel-info-item">
+
+                        <div class="single-hotel-info-icon">
+
+                            <i class="fa-solid fa-city"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="single-hotel-info-label">
+                                Thành phố
+                            </div>
+
+                            <div class="single-hotel-info-value">
+                                @Model.City
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="single-hotel-info-item">
+
+                        <div class="single-hotel-info-icon">
+
+                            <i class="fa-solid fa-phone"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="single-hotel-info-label">
+                                Điện thoại
+                            </div>
+
+                            <div class="single-hotel-info-value">
+                                @Model.Phone
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RATING -->
+
+                    <div class="single-hotel-info-item">
+
+                        <div class="single-hotel-info-icon">
+
+                            <i class="fa-solid fa-star"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="single-hotel-info-label">
+                                Hạng khách sạn
+                            </div>
+
+                            <div class="single-hotel-info-value">
+
+                                @Model.StarRating / 5 sao
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- EDIT -->
+
+                <div class="single-hotel-action">
+
+                    <a href="@Url.Action("Edit", "Hotel")"
+                       class="hotel-primary-btn">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                        Chỉnh sửa thông tin
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MANAGEMENT NAVIGATION
+             ===================================================== -->
+
+        <div class="hotel-management-section">
+
+
+            <div class="hotel-management-header">
+
+                <div>
+
+                    <h3>
+                        Quản lý khách sạn
+                    </h3>
+
+                    <p>
+                        Truy cập nhanh các chức năng quản lý
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="hotel-management-grid">
+
+
+                <!-- ROOMS -->
+
+                <a href="@Url.Action("Index", "Room")"
+                   class="hotel-management-card">
+
+                    <div class="hotel-management-icon blue">
+
+                        <i class="fa-solid fa-bed"></i>
+
+                    </div>
+
+                    <div class="hotel-management-content">
+
+                        <h4>
+                            Quản lý phòng
+                        </h4>
+
+                        <p>
+                            Quản lý các phòng thuộc khách sạn
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right hotel-management-arrow"></i>
+
+                </a>
+
+
+                <!-- GUESTS -->
+
+                <a href="@Url.Action("Index", "Guest")"
+                   class="hotel-management-card">
+
+                    <div class="hotel-management-icon green">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </div>
+
+                    <div class="hotel-management-content">
+
+                        <h4>
+                            Khách hàng
+                        </h4>
+
+                        <p>
+                            Quản lý thông tin khách hàng
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right hotel-management-arrow"></i>
+
+                </a>
+
+
+                <!-- BOOKING -->
+
+                <a href="@Url.Action("Index", "Booking")"
+                   class="hotel-management-card">
+
+                    <div class="hotel-management-icon orange">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+                    <div class="hotel-management-content">
+
+                        <h4>
+                            Đặt phòng
+                        </h4>
+
+                        <p>
+                            Quản lý các lượt đặt phòng
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right hotel-management-arrow"></i>
+
+                </a>
+
+
+                <!-- INVOICE -->
+
+                <a href="#"
+                   class="hotel-management-card">
+
+                    <div class="hotel-management-icon purple">
+
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                    </div>
+
+                    <div class="hotel-management-content">
+
+                        <h4>
+                            Hóa đơn
+                        </h4>
+
+                        <p>
+                            Quản lý hóa đơn và thanh toán
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right hotel-management-arrow"></i>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    }
+
+</div>

@@ -1,0 +1,1094 @@
+﻿@{
+    ViewBag.Title = "Tra cứu đặt phòng";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="booking-lookup-page">
+
+    <div class="booking-lookup-container">
+
+        <!-- =====================================================
+             BREADCRUMB
+             ===================================================== -->
+
+        <div class="booking-lookup-breadcrumb">
+
+            <a href="@Url.Action("Index", "UserHome")">
+                <i class="fa-solid fa-house"></i>
+                Trang chủ
+            </a>
+
+            <span>/</span>
+
+            <span>Tra cứu đặt phòng</span>
+
+        </div>
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="booking-lookup-heading">
+
+            <div class="booking-lookup-heading-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+
+            <div>
+
+                <div class="booking-lookup-eyebrow">
+                    BOOKING LOOKUP
+                </div>
+
+                <h1>Tra cứu đặt phòng</h1>
+
+                <p>
+                    Kiểm tra nhanh thông tin đặt phòng bằng số điện thoại
+                    bạn đã sử dụng khi đặt phòng tại Sunrise Hotel.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MAIN CARD
+             ===================================================== -->
+
+        <div class="booking-lookup-card">
+
+            <div class="booking-lookup-card-header">
+
+                <div>
+
+                    <h2>Thông tin tra cứu</h2>
+
+                    <p>
+                        Vui lòng nhập số điện thoại đã sử dụng khi đặt phòng.
+                    </p>
+
+                </div>
+
+                <div class="booking-lookup-card-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORM
+                 ================================================= -->
+
+            <form method="post"
+                  action="@Url.Action("Lookup", "UserBooking")"
+                  class="booking-lookup-form">
+
+                @Html.AntiForgeryToken()
+
+
+                <div class="booking-lookup-field">
+
+                    <label for="phone">
+
+                        Số điện thoại
+
+                        <span>*</span>
+
+                    </label>
+
+
+                    <div class="booking-lookup-input">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                        <input type="tel"
+                               id="phone"
+                               name="phone"
+                               value="@(ViewBag.LookupPhone ?? "")"
+                               placeholder="Ví dụ: 0901234567"
+                               autocomplete="tel"
+                               inputmode="tel"
+                               maxlength="15"
+                               required />
+
+                    </div>
+
+
+                    <div class="booking-lookup-help">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span>
+                            Sử dụng số điện thoại bạn đã cung cấp
+                            khi đặt phòng.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit"
+                        class="booking-lookup-submit">
+
+                    <span>TRA CỨU ĐẶT PHÒNG</span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </form>
+
+
+            <!-- =================================================
+                 THÔNG BÁO TRA CỨU
+                 ================================================= -->
+
+            @if (ViewBag.LookupError != null)
+            {
+                <div class="booking-lookup-message booking-lookup-error">
+
+                    <div class="booking-lookup-message-icon">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+
+                    <div>
+                        <strong>Không tìm thấy thông tin</strong>
+
+                        <p>
+                            @ViewBag.LookupError
+                        </p>
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- =================================================
+                 KẾT QUẢ TRA CỨU
+                 ================================================= -->
+
+            @if (ViewBag.LookupResults != null)
+            {
+                var lookupResults =
+                    ViewBag.LookupResults
+                    as List<QuanLyKhachSan.Models.BookingLookupResult>;
+
+                if (lookupResults != null && lookupResults.Count > 0)
+                {
+                    <div class="booking-lookup-results">
+
+                        <!-- HEADER KẾT QUẢ -->
+
+                        <div class="booking-lookup-results-header">
+
+                            <div>
+
+                                <div class="booking-lookup-results-eyebrow">
+                                    BOOKING HISTORY
+                                </div>
+
+                                <h2>Lịch sử đặt phòng</h2>
+
+                                <p>
+                                    Kết quả tra cứu cho số điện thoại
+                                    <strong>
+                                        @ViewBag.LookupPhone
+                                    </strong>
+                                </p>
+
+                            </div>
+
+                            <div class="booking-count">
+
+                                <i class="fa-solid fa-file-lines"></i>
+
+                                @lookupResults.Count đặt phòng
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DANH SÁCH BOOKING -->
+
+                        @foreach (var booking in lookupResults)
+                        {
+                            <div class="booking-result-card">
+
+                                <!-- TOP -->
+
+                                <div class="booking-result-top">
+
+                                    <div>
+
+                                        <span class="booking-result-label">
+                                            MÃ ĐẶT PHÒNG
+                                        </span>
+
+                                        <strong class="booking-result-id">
+                                            @booking.BookingId
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-status">
+
+                                        @if (string.Equals(
+                                            booking.Status,
+                                            "CONFIRMED",
+                                            StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        }
+                                        else if (string.Equals(
+                                            booking.Status,
+                                            "CANCELLED",
+                                            StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        }
+
+                                        @booking.Status
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- INFORMATION -->
+
+                                <div class="booking-result-grid">
+
+                                    <div class="booking-result-item">
+
+                                        <span>
+                                            <i class="fa-solid fa-user"></i>
+                                            Khách hàng
+                                        </span>
+
+                                        <strong>
+                                            @booking.GuestName
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-item">
+
+                                        <span>
+                                            <i class="fa-solid fa-door-open"></i>
+                                            Phòng
+                                        </span>
+
+                                        <strong>
+                                            Phòng @booking.RoomNumber
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-item">
+
+                                        <span>
+                                            <i class="fa-solid fa-calendar-plus"></i>
+                                            Nhận phòng
+                                        </span>
+
+                                        <strong>
+                                            @booking.CheckIn.ToString("dd/MM/yyyy")
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-item">
+
+                                        <span>
+                                            <i class="fa-solid fa-calendar-minus"></i>
+                                            Trả phòng
+                                        </span>
+
+                                        <strong>
+                                            @booking.CheckOut.ToString("dd/MM/yyyy")
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-item">
+
+                                        <span>
+                                            <i class="fa-solid fa-hotel"></i>
+                                            Khách sạn
+                                        </span>
+
+                                        <strong>
+                                            @booking.HotelName
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="booking-result-item booking-result-total">
+
+                                        <span>
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                            Tổng tiền
+                                        </span>
+
+                                        <strong>
+                                            @booking.TotalAmount.ToString("N0") ₫
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             INFORMATION SECTION
+             ===================================================== -->
+
+        <div class="booking-lookup-info">
+
+
+            <!-- ITEM 1 -->
+
+            <div class="booking-lookup-info-item">
+
+                <div class="booking-lookup-info-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div>
+
+                    <strong>Tra cứu nhanh chóng</strong>
+
+                    <p>
+                        Xem lại các thông tin đặt phòng
+                        chỉ với số điện thoại.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ITEM 2 -->
+
+            <div class="booking-lookup-info-item">
+
+                <div class="booking-lookup-info-icon">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+
+                <div>
+
+                    <strong>Thông tin đầy đủ</strong>
+
+                    <p>
+                        Kiểm tra phòng, ngày nhận phòng,
+                        ngày trả phòng và tổng tiền.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ITEM 3 -->
+
+            <div class="booking-lookup-info-item">
+
+                <div class="booking-lookup-info-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+
+                    <strong>Bảo mật thông tin</strong>
+
+                    <p>
+                        Thông tin được sử dụng cho mục đích
+                        tra cứu đặt phòng.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+     /* =========================================================
+    BOOKING LOOKUP PAGE
+    ========================================================= */
+
+     .booking-lookup-page {
+         min-height: calc(100vh - 140px);
+         padding: 48px 20px 80px;
+         background: #f7f9fc;
+     }
+
+
+     .booking-lookup-container {
+         width: 100%;
+         max-width: 900px;
+         margin: 0 auto;
+     }
+
+
+     /* =========================================================
+    BREADCRUMB
+    ========================================================= */
+
+     .booking-lookup-breadcrumb {
+         display: flex;
+         align-items: center;
+         gap: 9px;
+         margin-bottom: 32px;
+         font-size: 13px;
+         color: #8a94a6;
+     }
+
+
+         .booking-lookup-breadcrumb a {
+             display: inline-flex;
+             align-items: center;
+             gap: 6px;
+             color: #526071;
+             text-decoration: none;
+             transition: color 0.2s ease;
+         }
+
+
+             .booking-lookup-breadcrumb a:hover {
+                 color: #2563eb;
+             }
+
+
+         .booking-lookup-breadcrumb i {
+             font-size: 12px;
+         }
+
+
+     /* =========================================================
+    PAGE HEADING
+    ========================================================= */
+
+     .booking-lookup-heading {
+         display: flex;
+         align-items: center;
+         gap: 20px;
+         margin-bottom: 28px;
+     }
+
+
+     .booking-lookup-heading-icon {
+         flex: 0 0 64px;
+         width: 64px;
+         height: 64px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 16px;
+         background: #2563eb;
+         color: #ffffff;
+         font-size: 25px;
+         box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+     }
+
+
+     .booking-lookup-eyebrow {
+         margin-bottom: 5px;
+         font-size: 11px;
+         font-weight: 700;
+         letter-spacing: 1.5px;
+         color: #2563eb;
+     }
+
+
+     .booking-lookup-heading h1 {
+         margin: 0 0 7px;
+         color: #172033;
+         font-size: 31px;
+         line-height: 1.2;
+         font-weight: 700;
+     }
+
+
+     .booking-lookup-heading p {
+         max-width: 680px;
+         margin: 0;
+         color: #6b7280;
+         font-size: 14px;
+         line-height: 1.65;
+     }
+
+
+     /* =========================================================
+    MAIN CARD
+    ========================================================= */
+
+     .booking-lookup-card {
+         background: #ffffff;
+         border: 1px solid #e7ebf1;
+         border-radius: 16px;
+         padding: 30px 32px;
+         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+     }
+
+
+     .booking-lookup-card-header {
+         display: flex;
+         align-items: flex-start;
+         justify-content: space-between;
+         padding-bottom: 22px;
+         margin-bottom: 25px;
+         border-bottom: 1px solid #edf0f4;
+     }
+
+
+         .booking-lookup-card-header h2 {
+             margin: 0 0 6px;
+             color: #1f2937;
+             font-size: 18px;
+             font-weight: 700;
+         }
+
+
+         .booking-lookup-card-header p {
+             margin: 0;
+             color: #7a8494;
+             font-size: 13px;
+         }
+
+
+     .booking-lookup-card-icon {
+         width: 42px;
+         height: 42px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 10px;
+         background: #eff6ff;
+         color: #2563eb;
+         font-size: 17px;
+     }
+
+
+     /* =========================================================
+    FORM
+    ========================================================= */
+
+     .booking-lookup-field {
+         margin-bottom: 22px;
+     }
+
+
+         .booking-lookup-field label {
+             display: block;
+             margin-bottom: 9px;
+             color: #374151;
+             font-size: 14px;
+             font-weight: 600;
+         }
+
+
+             .booking-lookup-field label span {
+                 color: #dc2626;
+                 margin-left: 2px;
+             }
+
+
+     .booking-lookup-input {
+         position: relative;
+     }
+
+
+         .booking-lookup-input > i {
+             position: absolute;
+             left: 16px;
+             top: 50%;
+             transform: translateY(-50%);
+             color: #8a94a6;
+             font-size: 15px;
+             pointer-events: none;
+         }
+
+
+         .booking-lookup-input input {
+             width: 100%;
+             height: 52px;
+             box-sizing: border-box;
+             padding: 0 16px 0 46px;
+             border: 1px solid #d9dfe8;
+             border-radius: 9px;
+             outline: none;
+             background: #ffffff;
+             color: #1f2937;
+             font-size: 14px;
+             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+         }
+
+
+             .booking-lookup-input input::placeholder {
+                 color: #a2aab7;
+             }
+
+
+             .booking-lookup-input input:hover {
+                 border-color: #b8c1ce;
+             }
+
+
+             .booking-lookup-input input:focus {
+                 border-color: #2563eb;
+                 box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+             }
+
+
+     .booking-lookup-help {
+         display: flex;
+         align-items: center;
+         gap: 7px;
+         margin-top: 9px;
+         color: #7b8492;
+         font-size: 12px;
+     }
+
+
+         .booking-lookup-help i {
+             color: #2563eb;
+         }
+
+
+     /* =========================================================
+    SUBMIT BUTTON
+    ========================================================= */
+
+     .booking-lookup-submit {
+         width: 100%;
+         height: 52px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 10px;
+         border: none;
+         border-radius: 9px;
+         background: #2563eb;
+         color: #ffffff;
+         font-size: 13px;
+         font-weight: 700;
+         letter-spacing: 0.2px;
+         cursor: pointer;
+         transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+     }
+
+
+         .booking-lookup-submit:hover {
+             background: #1d4ed8;
+             box-shadow: 0 7px 18px rgba(37, 99, 235, 0.20);
+             transform: translateY(-1px);
+         }
+
+
+         .booking-lookup-submit:active {
+             transform: translateY(0);
+             box-shadow: none;
+         }
+
+
+         .booking-lookup-submit i {
+             font-size: 12px;
+         }
+
+
+     /* =========================================================
+    LOOKUP MESSAGE
+    ========================================================= */
+
+     .booking-lookup-message {
+         display: flex;
+         align-items: center;
+         gap: 13px;
+         margin-top: 22px;
+         padding: 16px 18px;
+         border-radius: 12px;
+         font-size: 13px;
+     }
+
+
+     .booking-lookup-message-icon {
+         flex: 0 0 38px;
+         width: 38px;
+         height: 38px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 10px;
+         font-size: 16px;
+     }
+
+
+     .booking-lookup-error {
+         background: #fff7ed;
+         border: 1px solid #fed7aa;
+         color: #c2410c;
+     }
+
+
+         .booking-lookup-error .booking-lookup-message-icon {
+             background: #ffedd5;
+             color: #ea580c;
+         }
+
+
+     .booking-lookup-message strong {
+         display: block;
+         margin-bottom: 4px;
+         font-size: 13px;
+         font-weight: 700;
+     }
+
+
+     .booking-lookup-message p {
+         margin: 0;
+         color: #9a3412;
+         font-size: 12px;
+         line-height: 1.5;
+     }
+
+
+     /* =========================================================
+    LOOKUP RESULTS
+    ========================================================= */
+
+     .booking-lookup-results {
+         margin-top: 30px;
+         padding-top: 28px;
+         border-top: 1px solid #edf0f4;
+     }
+
+
+     .booking-lookup-results-header {
+         display: flex;
+         align-items: flex-end;
+         justify-content: space-between;
+         gap: 20px;
+         margin-bottom: 18px;
+     }
+
+
+     .booking-lookup-results-eyebrow {
+         margin-bottom: 5px;
+         color: #2563eb;
+         font-size: 10px;
+         font-weight: 700;
+         letter-spacing: 1.4px;
+     }
+
+
+     .booking-lookup-results-header h2 {
+         margin: 0 0 6px;
+         color: #1f2937;
+         font-size: 20px;
+         font-weight: 700;
+     }
+
+
+     .booking-lookup-results-header p {
+         margin: 0;
+         color: #7b8492;
+         font-size: 13px;
+     }
+
+
+         .booking-lookup-results-header p strong {
+             color: #374151;
+         }
+
+
+     .booking-count {
+         display: inline-flex;
+         align-items: center;
+         gap: 7px;
+         flex-shrink: 0;
+         padding: 8px 13px;
+         border-radius: 20px;
+         background: #eff6ff;
+         color: #2563eb;
+         font-size: 12px;
+         font-weight: 700;
+     }
+
+
+     /* =========================================================
+    BOOKING RESULT CARD
+    ========================================================= */
+
+     .booking-result-card {
+         margin-bottom: 16px;
+         padding: 22px;
+         background: #ffffff;
+         border: 1px solid #e5e7eb;
+         border-radius: 14px;
+         box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+     }
+
+
+     .booking-result-top {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 15px;
+         padding-bottom: 17px;
+         margin-bottom: 18px;
+         border-bottom: 1px solid #edf0f4;
+     }
+
+
+     .booking-result-label {
+         display: block;
+         margin-bottom: 5px;
+         color: #8a94a6;
+         font-size: 10px;
+         font-weight: 700;
+         letter-spacing: 1px;
+     }
+
+
+     .booking-result-id {
+         color: #1f2937;
+         font-size: 13px;
+         word-break: break-all;
+     }
+
+
+     .booking-result-status {
+         display: inline-flex;
+         align-items: center;
+         gap: 6px;
+         padding: 7px 12px;
+         border-radius: 20px;
+         background: #ecfdf5;
+         color: #047857;
+         font-size: 11px;
+         font-weight: 700;
+         white-space: nowrap;
+     }
+
+
+     .booking-result-grid {
+         display: grid;
+         grid-template-columns: repeat(3, minmax(0, 1fr));
+         gap: 18px;
+     }
+
+
+     .booking-result-item span {
+         display: block;
+         margin-bottom: 6px;
+         color: #8a94a6;
+         font-size: 11px;
+     }
+
+
+         .booking-result-item span i {
+             margin-right: 5px;
+             color: #94a3b8;
+         }
+
+
+     .booking-result-item strong {
+         display: block;
+         color: #374151;
+         font-size: 13px;
+     }
+
+
+     .booking-result-total strong {
+         color: #2563eb;
+         font-size: 15px;
+     }
+
+
+     /* =========================================================
+    INFORMATION CARDS
+    ========================================================= */
+
+     .booking-lookup-info {
+         display: grid;
+         grid-template-columns: repeat(3, minmax(0, 1fr));
+         gap: 15px;
+         margin-top: 18px;
+     }
+
+
+     .booking-lookup-info-item {
+         display: flex;
+         align-items: flex-start;
+         gap: 12px;
+         min-height: 92px;
+         padding: 18px;
+         background: #ffffff;
+         border: 1px solid #e7ebf1;
+         border-radius: 12px;
+     }
+
+
+     .booking-lookup-info-icon {
+         flex: 0 0 36px;
+         width: 36px;
+         height: 36px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 9px;
+         background: #f1f5f9;
+         color: #475569;
+         font-size: 14px;
+     }
+
+
+     .booking-lookup-info-item strong {
+         display: block;
+         margin-bottom: 5px;
+         color: #374151;
+         font-size: 13px;
+         font-weight: 700;
+     }
+
+
+     .booking-lookup-info-item p {
+         margin: 0;
+         color: #7b8492;
+         font-size: 12px;
+         line-height: 1.55;
+     }
+
+
+     /* =========================================================
+    RESPONSIVE
+    ========================================================= */
+
+     @@media (max-width: 768px) {
+
+         .booking-lookup-page {
+             padding: 35px 16px 60px;
+         }
+
+
+         .booking-lookup-heading {
+             align-items: flex-start;
+         }
+
+
+         .booking-lookup-heading-icon {
+             flex-basis: 54px;
+             width: 54px;
+             height: 54px;
+             font-size: 21px;
+         }
+
+
+         .booking-lookup-heading h1 {
+             font-size: 26px;
+         }
+
+
+         .booking-lookup-card {
+             padding: 24px 20px;
+         }
+
+
+         .booking-lookup-info {
+             grid-template-columns: 1fr;
+         }
+
+
+         .booking-result-grid {
+             grid-template-columns: repeat(2, minmax(0, 1fr));
+         }
+     }
+
+
+     @@media (max-width: 480px) {
+
+         .booking-lookup-breadcrumb {
+             margin-bottom: 24px;
+         }
+
+
+         .booking-lookup-heading {
+             gap: 13px;
+         }
+
+
+         .booking-lookup-heading-icon {
+             display: none;
+         }
+
+
+         .booking-lookup-heading h1 {
+             font-size: 24px;
+         }
+
+
+         .booking-lookup-heading p {
+             font-size: 13px;
+         }
+
+
+         .booking-lookup-card-header {
+             gap: 15px;
+         }
+
+
+         .booking-lookup-card-icon {
+             display: none;
+         }
+
+
+         .booking-lookup-results-header {
+             align-items: flex-start;
+             flex-direction: column;
+         }
+
+
+         .booking-result-top {
+             align-items: flex-start;
+             flex-direction: column;
+         }
+
+
+         .booking-result-grid {
+             grid-template-columns: 1fr;
+         }
+     }
+</style>

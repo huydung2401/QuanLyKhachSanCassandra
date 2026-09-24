@@ -1,0 +1,1167 @@
+﻿@model QuanLyKhachSan.Models.UserBookingViewModel
+
+@{
+    ViewBag.Title = "Đặt phòng";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    var rooms = ViewBag.Rooms as IEnumerable<QuanLyKhachSan.Models.BookingRoomOption>;
+
+    var selectedRoom = rooms?
+        .FirstOrDefault(x => x.RoomNumber == Model.RoomNumber);
+
+    Func<string, int, string> ResolveRoomImage = (imageUrl, roomNumber) =>
+    {
+        var fallback = "~/Content/Images/Rooms/HOTEL001_" + roomNumber + ".jpg";
+
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return Url.Content(fallback);
+        }
+
+        var value = imageUrl.Trim();
+
+        // URL ảnh bên ngoài
+        if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        // Đã có ~/
+        if (value.StartsWith("~/"))
+        {
+            return Url.Content(value);
+        }
+
+        // Đã có /
+        if (value.StartsWith("/"))
+        {
+            return value;
+        }
+
+        // Cassandra lưu Content/Images/...
+        if (value.StartsWith("Content/", StringComparison.OrdinalIgnoreCase))
+        {
+            return Url.Content("~/" + value);
+        }
+
+        // Cassandra lưu đường dẫn tương đối
+        if (value.Contains("/"))
+        {
+            return Url.Content("~/" + value.TrimStart('/'));
+        }
+
+        // Cassandra chỉ lưu tên file
+        return Url.Content("~/Content/Images/Rooms/" + value);
+    };
+}
+
+<style>
+
+    .booking-page {
+        background: #f7f8fa;
+        min-height: calc(100vh - 80px);
+        padding: 50px 0 80px;
+    }
+
+    .booking-container {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .booking-header {
+        margin-bottom: 35px;
+    }
+
+        .booking-header .label {
+            color: #b18b52;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .booking-header h1 {
+            margin: 0 0 10px;
+            font-size: 38px;
+            font-weight: 700;
+            color: #182536;
+        }
+
+        .booking-header p {
+            margin: 0;
+            color: #777;
+            font-size: 16px;
+        }
+
+    .booking-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 25px;
+        align-items: start;
+    }
+
+    .booking-card,
+    .booking-summary {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    }
+
+    .booking-card {
+        padding: 35px;
+    }
+
+    .booking-summary {
+        padding: 25px;
+        position: sticky;
+        top: 25px;
+    }
+
+    .section-title {
+        font-size: 21px;
+        font-weight: 700;
+        color: #182536;
+        margin: 0 0 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #303b48;
+            margin-bottom: 8px;
+        }
+
+    .required {
+        color: #d9534f;
+    }
+
+    .form-control {
+        width: 100%;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        color: #333;
+        font-size: 15px;
+        box-sizing: border-box;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: #b18b52;
+            box-shadow: 0 0 0 3px rgba(177,139,82,.10);
+        }
+
+    textarea.form-control {
+        height: 100px;
+        padding-top: 12px;
+        resize: vertical;
+    }
+
+    .field-validation-error {
+        display: block;
+        color: #d9534f;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .validation-summary-errors {
+        background: #fff0f0;
+        border: 1px solid #f0caca;
+        color: #b52b2b;
+        border-radius: 8px;
+        padding: 15px 18px;
+        margin-bottom: 25px;
+    }
+
+    .summary-title {
+        margin: 0 0 20px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #182536;
+    }
+
+    .summary-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        display: block;
+    }
+
+    .summary-room {
+        font-size: 18px;
+        font-weight: 700;
+        color: #182536;
+        margin-bottom: 5px;
+    }
+
+    .summary-type {
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 11px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+    }
+
+        .summary-line span:first-child {
+            color: #777;
+        }
+
+        .summary-line strong {
+            color: #182536;
+            text-align: right;
+        }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #eee;
+    }
+
+        .summary-total span {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .summary-total strong {
+            font-size: 24px;
+            color: #b18b52;
+        }
+
+    .booking-submit {
+        width: 100%;
+        height: 52px;
+        border: 0;
+        border-radius: 8px;
+        background: #182536;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: .2s;
+    }
+
+        .booking-submit:hover {
+            background: #b18b52;
+        }
+
+    .note-box {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f5ef;
+        border-radius: 8px;
+        color: #66583f;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 900px) {
+
+        .booking-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-summary {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 600px) {
+
+        .booking-card {
+            padding: 22px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .booking-header h1 {
+            font-size: 30px;
+        }
+    }
+</style>
+
+
+<div class="booking-page">
+
+    <div class="booking-container">
+
+        <!-- HEADER -->
+
+        <div class="booking-header">
+
+            <span class="label">
+                RESERVATION
+            </span>
+
+            <h1>
+                Đặt phòng
+            </h1>
+
+            <p>
+                Vui lòng nhập đầy đủ thông tin để hoàn tất đặt phòng.
+            </p>
+
+        </div>
+
+
+        <!-- VALIDATION -->
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="validation-summary-errors">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "validation-summary-errors" }
+        )
+
+
+        <div class="booking-grid">
+
+
+            <!-- =====================================================
+                 FORM
+                 ===================================================== -->
+
+            <div class="booking-card">
+
+                @using (Html.BeginForm(
+                    "Confirm",
+                    "UserBooking",
+                    FormMethod.Post,
+                    new { id = "bookingForm" }))
+                {
+
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- =================================================
+                         ROOM
+                         ================================================= -->
+
+                    <div class="form-section">
+
+                        <h2 class="section-title">
+                            1. Chọn phòng
+                        </h2>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Phòng
+                                <span class="required">*</span>
+                            </label>
+
+                            <select id="RoomNumber"
+                                    name="RoomNumber"
+                                    class="form-control"
+                                    required>
+
+                                <option value="">
+                                    -- Chọn phòng --
+                                </option>
+
+                                @if (rooms != null)
+                                {
+                                    foreach (var room in rooms)
+                                    {
+                                        <option value="@room.RoomNumber"
+                                                data-type="@room.RoomType"
+                                                data-price="@room.PricePerNight"
+                                                data-image="@ResolveRoomImage(room.ImageUrl, room.RoomNumber)"
+                                                @(room.RoomNumber == Model.RoomNumber ? "selected" : "")>
+
+                                            Phòng @room.RoomNumber -
+                                            @room.RoomType -
+                                            @room.PricePerNight.ToString("N0") ₫/đêm
+
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+                            @Html.ValidationMessageFor(
+                                m => m.RoomNumber
+                            )
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DATE
+                         ================================================= -->
+
+                    <div class="form-section">
+
+                        <h2 class="section-title">
+                            2. Thông tin lưu trú
+                        </h2>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label>
+                                    Ngày nhận phòng
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.CheckIn,
+                                    "{0:yyyy-MM-dd}",
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        type = "date",
+                                        id = "CheckIn",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.CheckIn
+                                )
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Ngày trả phòng
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.CheckOut,
+                                    "{0:yyyy-MM-dd}",
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        type = "date",
+                                        id = "CheckOut",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.CheckOut
+                                )
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Số khách
+                                <span class="required">*</span>
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.Guests,
+                                new
+                                {
+                                    @class = "form-control",
+                                    type = "number",
+                                    min = "1",
+                                    max = "10",
+                                    required = "required"
+                                }
+                            )
+
+                            @Html.ValidationMessageFor(
+                                m => m.Guests
+                            )
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CUSTOMER
+                         ================================================= -->
+
+                    <div class="form-section">
+
+                        <h2 class="section-title">
+                            3. Thông tin khách hàng
+                        </h2>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label>
+                                    Họ và tên
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.FullName,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = "Nguyễn Văn A",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.FullName
+                                )
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Số điện thoại
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.Phone,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        type = "tel",
+                                        placeholder = "0901234567",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Phone
+                                )
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label>
+                                    Email
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.Email,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        type = "email",
+                                        placeholder = "example@gmail.com",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Email
+                                )
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    CCCD / CMND
+                                    <span class="required">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.NationalId,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = "079123456789",
+                                        maxlength = "12",
+                                        required = "required"
+                                    }
+                                )
+
+                                @Html.ValidationMessageFor(
+                                    m => m.NationalId
+                                )
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
+                    <button type="submit"
+                            class="booking-submit">
+
+                        XÁC NHẬN ĐẶT PHÒNG
+
+                    </button>
+
+
+                    <div class="note-box">
+
+                        <strong>Lưu ý:</strong>
+                        Vui lòng kiểm tra chính xác số điện thoại,
+                        email và CCCD/CMND trước khi xác nhận.
+                        Thông tin này được sử dụng để liên hệ
+                        và lưu thông tin đặt phòng.
+
+                    </div>
+
+                }
+
+            </div>
+
+
+            <!-- =====================================================
+                 SUMMARY
+                 ===================================================== -->
+
+            <div class="booking-summary">
+
+                <h2 class="summary-title">
+                    Thông tin đặt phòng
+                </h2>
+
+
+                <div id="summaryContent">
+
+                    @if (selectedRoom != null)
+                    {
+                        var image = ResolveRoomImage(
+                            selectedRoom.ImageUrl,
+                            selectedRoom.RoomNumber
+                        );
+
+                        <img id="summaryImage"
+                             class="summary-image"
+                             src="@image"
+                             alt="Phòng @selectedRoom.RoomNumber"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/Content/Images/Rooms/HOTEL001_" + selectedRoom.RoomNumber + ".jpg")';" />
+
+
+                        <div class="summary-room"
+                             id="summaryRoom">
+
+                            Phòng @selectedRoom.RoomNumber
+
+                        </div>
+
+                        <div class="summary-type"
+                             id="summaryType">
+
+                            @selectedRoom.RoomType
+
+                        </div>
+                    }
+                    else
+                    {
+                        <img id="summaryImage"
+                             class="summary-image"
+                             src="@Url.Content("~/Content/Images/Rooms/HOTEL001_101.jpg")"
+                             alt="Phòng" />
+
+                        <div class="summary-room"
+                             id="summaryRoom">
+
+                            Chưa chọn phòng
+
+                        </div>
+
+                        <div class="summary-type"
+                             id="summaryType">
+
+                            Vui lòng chọn phòng
+
+                        </div>
+                    }
+
+
+                    <div class="summary-line">
+
+                        <span>
+                            Giá phòng
+                        </span>
+
+                        <strong id="summaryPrice">
+                            0 ₫/đêm
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-line">
+
+                        <span>
+                            Nhận phòng
+                        </span>
+
+                        <strong id="summaryCheckIn">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-line">
+
+                        <span>
+                            Trả phòng
+                        </span>
+
+                        <strong id="summaryCheckOut">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-line">
+
+                        <span>
+                            Số đêm
+                        </span>
+
+                        <strong id="summaryNights">
+                            0 đêm
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-total">
+
+                        <span>
+                            Tổng tiền
+                        </span>
+
+                        <strong id="summaryTotal">
+                            0 ₫
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var roomSelect =
+            document.getElementById("RoomNumber");
+
+        var checkIn =
+            document.getElementById("CheckIn");
+
+        var checkOut =
+            document.getElementById("CheckOut");
+
+        var summaryImage =
+            document.getElementById("summaryImage");
+
+        var summaryRoom =
+            document.getElementById("summaryRoom");
+
+        var summaryType =
+            document.getElementById("summaryType");
+
+        var summaryPrice =
+            document.getElementById("summaryPrice");
+
+        var summaryCheckIn =
+            document.getElementById("summaryCheckIn");
+
+        var summaryCheckOut =
+            document.getElementById("summaryCheckOut");
+
+        var summaryNights =
+            document.getElementById("summaryNights");
+
+        var summaryTotal =
+            document.getElementById("summaryTotal");
+
+
+        function formatMoney(value) {
+
+            return new Intl.NumberFormat(
+                "vi-VN"
+            ).format(value) + " ₫";
+
+        }
+
+
+        function resolveImageUrl(image, roomNumber) {
+
+            if (!image || !image.trim()) {
+
+                return "/Content/Images/Rooms/HOTEL001_" +
+                    roomNumber +
+                    ".jpg";
+
+            }
+
+            image = image.trim();
+
+
+            // URL bên ngoài
+            if (image.indexOf("http://") === 0 ||
+                image.indexOf("https://") === 0) {
+
+                return image;
+
+            }
+
+
+            // ~/Content/...
+            if (image.indexOf("~/") === 0) {
+
+                return image.substring(1);
+
+            }
+
+
+            // /Content/...
+            if (image.indexOf("/") === 0) {
+
+                return image;
+
+            }
+
+
+            // Content/...
+            if (image.indexOf("Content/") === 0) {
+
+                return "/" + image;
+
+            }
+
+
+            // Đường dẫn có thư mục
+            if (image.indexOf("/") >= 0) {
+
+                return "/" +
+                    image.replace(/^\/+/, "");
+
+            }
+
+
+            // Chỉ có tên file
+            return "/Content/Images/Rooms/" +
+                image;
+
+        }
+
+
+        function calculate() {
+
+            var selected =
+                roomSelect.options[
+                roomSelect.selectedIndex
+                ];
+
+
+            if (selected &&
+                selected.value !== "") {
+
+                var roomNumber =
+                    selected.value;
+
+                var roomType =
+                    selected.getAttribute(
+                        "data-type"
+                    );
+
+                var price =
+                    parseFloat(
+                        selected.getAttribute(
+                            "data-price"
+                        )
+                    ) || 0;
+
+                var image =
+                    selected.getAttribute(
+                        "data-image"
+                    );
+
+
+                summaryRoom.textContent =
+                    "Phòng " + roomNumber;
+
+
+                summaryType.textContent =
+                    roomType || "";
+
+
+                summaryPrice.textContent =
+                    formatMoney(price) +
+                    "/đêm";
+
+
+                var imageUrl =
+                    resolveImageUrl(
+                        image,
+                        roomNumber
+                    );
+
+
+                summaryImage.onerror =
+                    function () {
+
+                        this.onerror = null;
+
+                        this.src =
+                            "/Content/Images/Rooms/HOTEL001_" +
+                            roomNumber +
+                            ".jpg";
+
+                    };
+
+
+                summaryImage.src =
+                    imageUrl;
+
+            }
+            else {
+
+                summaryRoom.textContent =
+                    "Chưa chọn phòng";
+
+                summaryType.textContent =
+                    "Vui lòng chọn phòng";
+
+                summaryPrice.textContent =
+                    "0 ₫/đêm";
+
+            }
+
+
+            var inDate =
+                checkIn.value
+                    ? new Date(
+                        checkIn.value +
+                        "T00:00:00"
+                    )
+                    : null;
+
+
+            var outDate =
+                checkOut.value
+                    ? new Date(
+                        checkOut.value +
+                        "T00:00:00"
+                    )
+                    : null;
+
+
+            summaryCheckIn.textContent =
+                checkIn.value || "-";
+
+
+            summaryCheckOut.textContent =
+                checkOut.value || "-";
+
+
+            var nights = 0;
+
+
+            if (inDate &&
+                outDate &&
+                outDate > inDate) {
+
+                nights =
+                    Math.round(
+                        (outDate - inDate) /
+                        (1000 * 60 * 60 * 24)
+                    );
+
+            }
+
+
+            summaryNights.textContent =
+                nights + " đêm";
+
+
+            var price =
+                selected &&
+                    selected.value !== ""
+                    ? parseFloat(
+                        selected.getAttribute(
+                            "data-price"
+                        )
+                    ) || 0
+                    : 0;
+
+
+            summaryTotal.textContent =
+                formatMoney(
+                    nights * price
+                );
+
+        }
+
+
+        roomSelect.addEventListener(
+            "change",
+            calculate
+        );
+
+
+        checkIn.addEventListener(
+            "change",
+            calculate
+        );
+
+
+        checkOut.addEventListener(
+            "change",
+            calculate
+        );
+
+
+        var today =
+            new Date();
+
+
+        var todayString =
+            today.getFullYear() +
+            "-" +
+            String(
+                today.getMonth() + 1
+            ).padStart(2, "0") +
+            "-" +
+            String(
+                today.getDate()
+            ).padStart(2, "0");
+
+
+        checkIn.min =
+            todayString;
+
+
+        checkOut.min =
+            todayString;
+
+
+        checkIn.addEventListener(
+            "change",
+            function () {
+
+                if (checkIn.value) {
+
+                    var nextDay =
+                        new Date(
+                            checkIn.value +
+                            "T00:00:00"
+                        );
+
+
+                    nextDay.setDate(
+                        nextDay.getDate() + 1
+                    );
+
+
+                    var minCheckout =
+                        nextDay.getFullYear() +
+                        "-" +
+                        String(
+                            nextDay.getMonth() + 1
+                        ).padStart(2, "0") +
+                        "-" +
+                        String(
+                            nextDay.getDate()
+                        ).padStart(2, "0");
+
+
+                    checkOut.min =
+                        minCheckout;
+
+
+                    if (checkOut.value &&
+                        checkOut.value <
+                        minCheckout) {
+
+                        checkOut.value =
+                            minCheckout;
+
+                    }
+
+                }
+
+
+                calculate();
+
+            });
+
+
+        calculate();
+
+    });
+
+</script>

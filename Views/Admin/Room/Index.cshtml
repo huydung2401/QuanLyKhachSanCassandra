@@ -1,0 +1,1652 @@
+﻿@model IEnumerable<QuanLyKhachSan.Models.Room>
+
+@{
+    ViewBag.Title = "Quản lý phòng";
+}
+
+<div class="room-management-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="room-page-header">
+
+        <div>
+
+            <div class="page-label">
+                QUẢN LÝ KHÁCH SẠN
+            </div>
+
+            <h1>
+                Quản lý phòng
+            </h1>
+
+            <p>
+                Quản lý danh sách phòng của khách sạn
+                <strong>@ViewBag.HotelId</strong>
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a href="@Url.Action(
+                "Create",
+                "Room",
+                new
+                {
+                    hotelId = ViewBag.HotelId
+                })"
+               class="btn-add-room">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Thêm phòng
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== -->
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-message alert-success-custom">
+
+            <div class="alert-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+                @TempData["Success"]
+            </div>
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         ERROR MESSAGE
+    ====================================================== -->
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-message alert-error-custom">
+
+            <div class="alert-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+
+            <div>
+                @TempData["Error"]
+            </div>
+
+        </div>
+    }
+
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert-message alert-error-custom">
+
+            <div class="alert-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+
+            <div>
+                @ViewBag.Error
+            </div>
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         SEARCH / FILTER
+    ====================================================== -->
+
+    <div class="search-card">
+
+        <div class="search-card-header">
+
+            <div>
+
+                <span class="section-label">
+                    TÌM KIẾM
+                </span>
+
+                <h2>
+                    Tìm kiếm phòng
+                </h2>
+
+            </div>
+
+            <div class="search-header-icon">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </div>
+
+        </div>
+
+
+        <div class="search-card-body">
+
+            <!-- SEARCH INPUT -->
+
+            <div class="search-input-wrapper">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input type="text"
+                       id="roomSearch"
+                       class="room-search-input"
+                       placeholder="Tìm theo số phòng, loại phòng hoặc trạng thái..."
+                       autocomplete="off" />
+
+                <button type="button"
+                        id="clearSearch"
+                        class="clear-search-btn"
+                        title="Xóa tìm kiếm"
+                        style="display:none;">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- STATUS FILTER -->
+
+            <div class="status-filter-wrapper">
+
+                <label>
+                    Trạng thái
+                </label>
+
+                <div class="status-select-wrapper">
+
+                    <i class="fa-solid fa-filter"></i>
+
+                    <select id="statusFilter">
+
+                        <option value="">
+                            Tất cả trạng thái
+                        </option>
+
+                        <option value="Available">
+                            Phòng trống
+                        </option>
+
+                        <option value="Occupied">
+                            Đang thuê
+                        </option>
+
+                        <option value="Cleaning">
+                            Đang dọn
+                        </option>
+
+                        <option value="Maintenance">
+                            Bảo trì
+                        </option>
+
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <div class="search-result">
+
+                <span id="roomResultText">
+                    Hiển thị tất cả phòng
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ROOM TABLE
+    ====================================================== -->
+
+    <div class="room-table-card">
+
+        <div class="room-table-header">
+
+            <div>
+
+                <span class="section-label">
+                    DANH SÁCH
+                </span>
+
+                <h2>
+                    Phòng khách sạn
+                </h2>
+
+            </div>
+
+
+            <div class="total-room-badge">
+
+                <i class="fa-solid fa-bed"></i>
+
+                <span id="totalRoomCount">
+                    0
+                </span>
+
+                phòng
+
+            </div>
+
+        </div>
+
+
+        <div class="room-table-body">
+
+            @if (Model != null && Model.Any())
+            {
+
+                <div class="table-responsive">
+
+                    <table class="room-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="image-column">
+                                    Ảnh
+                                </th>
+
+                                <th>
+                                    Số phòng
+                                </th>
+
+                                <th>
+                                    Loại phòng
+                                </th>
+
+                                <th>
+                                    Giá / đêm
+                                </th>
+
+                                <th>
+                                    Trạng thái
+                                </th>
+
+                                <th class="action-column">
+                                    Thao tác
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="roomTableBody">
+
+                            @foreach (var room in Model)
+                            {
+                                <tr class="room-row"
+                                    data-room-number="@room.RoomNumber"
+                                    data-room-type="@room.RoomType"
+                                    data-room-status="@room.Status">
+
+
+                                    <!-- =================================
+                                         IMAGE
+                                    ================================== -->
+
+                                    <td class="room-image-cell">
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            room.ImageUrl))
+                                        {
+                                            <img src="@Url.Content(room.ImageUrl)"
+                                                 alt="Phòng @room.RoomNumber"
+                                                 class="room-thumbnail"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                                            <div class="room-image-placeholder"
+                                                 style="display:none;">
+
+                                                <i class="fa-solid fa-image"></i>
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="room-image-placeholder">
+
+                                                <i class="fa-solid fa-image"></i>
+
+                                            </div>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                         ROOM NUMBER
+                                    ================================== -->
+
+                                    <td>
+
+                                        <div class="room-number">
+
+                                            <div class="room-number-icon">
+
+                                                <i class="fa-solid fa-door-open"></i>
+
+                                            </div>
+
+                                            <strong>
+                                                @room.RoomNumber
+                                            </strong>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                         ROOM TYPE
+                                    ================================== -->
+
+                                    <td>
+
+                                        <span class="room-type">
+                                            @room.RoomType
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                         PRICE
+                                    ================================== -->
+
+                                    <td>
+
+                                        <div class="room-price">
+
+                                            @room.PricePerNight.ToString("#,##0")
+
+                                            <span>
+                                                ₫ / đêm
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                         STATUS
+                                    ================================== -->
+
+                                    <td>
+
+                                        @if (string.Equals(
+                                            room.Status,
+                                            "Available",
+                                            StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="room-status status-available">
+
+                                                <span class="status-dot"></span>
+
+                                                Phòng trống
+
+                                            </span>
+                                        }
+                                        else if (
+                                            string.Equals(
+                                                room.Status,
+                                                "Occupied",
+                                                StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="room-status status-occupied">
+
+                                                <span class="status-dot"></span>
+
+                                                Đang thuê
+
+                                            </span>
+                                        }
+                                        else if (
+                                            string.Equals(
+                                                room.Status,
+                                                "Cleaning",
+                                                StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="room-status status-cleaning">
+
+                                                <span class="status-dot"></span>
+
+                                                Đang dọn
+
+                                            </span>
+                                        }
+                                        else if (
+                                            string.Equals(
+                                                room.Status,
+                                                "Maintenance",
+                                                StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="room-status status-maintenance">
+
+                                                <span class="status-dot"></span>
+
+                                                Bảo trì
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="room-status status-default">
+
+                                                <span class="status-dot"></span>
+
+                                                @room.Status
+
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- =================================
+                                         ACTIONS
+                                    ================================== -->
+
+                                    <td>
+
+                                        <div class="room-actions">
+
+
+                                            <!-- DETAILS -->
+
+                                            <a href="@Url.Action(
+                                                "Details",
+                                                "Room",
+                                                new
+                                                {
+                                                    hotelId = room.HotelId,
+                                                    roomNumber = room.RoomNumber
+                                                })"
+                                               class="action-btn action-view"
+                                               title="Xem chi tiết">
+
+                                                <i class="fa-solid fa-eye"></i>
+
+                                            </a>
+
+
+                                            <!-- EDIT -->
+
+                                            <a href="@Url.Action(
+                                                "Edit",
+                                                "Room",
+                                                new
+                                                {
+                                                    hotelId = room.HotelId,
+                                                    roomNumber = room.RoomNumber
+                                                })"
+                                               class="action-btn action-edit"
+                                               title="Sửa phòng">
+
+                                                <i class="fa-solid fa-pen"></i>
+
+                                            </a>
+
+
+                                            <!-- DELETE -->
+
+                                            @using (Html.BeginForm(
+                                                "Delete",
+                                                "Room",
+                                                new
+                                                {
+                                                    hotelId = room.HotelId,
+                                                    roomNumber = room.RoomNumber
+                                                },
+                                                FormMethod.Post,
+                                                new
+                                                {
+                                                    @class = "delete-form"
+                                                }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn action-delete"
+                                                        title="Xóa phòng"
+                                                        onclick="return confirmDelete('@room.RoomNumber');">
+
+                                                    <i class="fa-solid fa-trash"></i>
+
+                                                </button>
+                                            }
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- NO SEARCH RESULT -->
+
+                <div id="noSearchResult"
+                     class="no-search-result"
+                     style="display:none;">
+
+                    <div class="no-search-icon">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                    </div>
+
+                    <h3>
+                        Không tìm thấy phòng
+                    </h3>
+
+                    <p>
+                        Không có phòng nào phù hợp với điều kiện tìm kiếm.
+                    </p>
+
+                    <button type="button"
+                            onclick="clearRoomSearch()"
+                            class="btn-reset-search">
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        Xóa bộ lọc
+
+                    </button>
+
+                </div>
+
+            }
+            else
+            {
+
+                <div class="empty-room-state">
+
+                    <div class="empty-room-icon">
+
+                        <i class="fa-solid fa-bed"></i>
+
+                    </div>
+
+                    <h3>
+                        Chưa có phòng
+                    </h3>
+
+                    <p>
+                        Khách sạn này chưa có phòng nào.
+                    </p>
+
+                    <a href="@Url.Action(
+                        "Create",
+                        "Room",
+                        new
+                        {
+                            hotelId = ViewBag.HotelId
+                        })"
+                       class="btn-add-first-room">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Thêm phòng đầu tiên
+
+                    </a>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* =====================================================
+       PAGE
+    ====================================================== */
+
+    .room-management-page {
+        max-width: 1450px;
+        margin: 0 auto;
+        padding: 35px 45px 60px;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ====================================================== */
+
+    .room-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 30px;
+        margin-bottom: 28px;
+    }
+
+    .page-label {
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 7px;
+    }
+
+    .room-page-header h1 {
+        margin: 0;
+        color: #172554;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .room-page-header p {
+        margin: 8px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+        .room-page-header p strong {
+            color: #2563eb;
+        }
+
+
+    /* =====================================================
+       ADD BUTTON
+    ====================================================== */
+
+    .btn-add-room,
+    .btn-add-first-room {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 19px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #ffffff !important;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+        .btn-add-room:hover,
+        .btn-add-first-room:hover {
+            background: #1d4ed8;
+            color: #ffffff !important;
+        }
+
+
+    /* =====================================================
+       ALERT
+    ====================================================== */
+
+    .alert-message {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 17px;
+        margin-bottom: 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .alert-icon {
+        font-size: 17px;
+    }
+
+    .alert-success-custom {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+    }
+
+    .alert-error-custom {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+    }
+
+
+    /* =====================================================
+       SEARCH CARD
+    ====================================================== */
+
+    .search-card {
+        margin-bottom: 22px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 7px 22px rgba(15, 23, 42, .05);
+    }
+
+    .search-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-label {
+        display: block;
+        color: #2563eb;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        margin-bottom: 4px;
+    }
+
+    .search-card-header h2 {
+        margin: 0;
+        color: #172554;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .search-header-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+
+    .search-card-body {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) 240px auto;
+        align-items: end;
+        gap: 16px;
+        padding: 20px 24px;
+    }
+
+
+    /* =====================================================
+       SEARCH INPUT
+    ====================================================== */
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 46px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #ffffff;
+        transition: all .2s ease;
+    }
+
+        .search-input-wrapper:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .search-input-wrapper > i {
+            width: 43px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    .room-search-input {
+        flex: 1;
+        height: 100%;
+        min-width: 0;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        color: #334155;
+        font-size: 14px;
+        background: transparent;
+    }
+
+        .room-search-input::placeholder {
+            color: #94a3b8;
+        }
+
+    .clear-search-btn {
+        width: 32px;
+        height: 32px;
+        margin-right: 6px;
+        border: none;
+        border-radius: 7px;
+        background: #f1f5f9;
+        color: #64748b;
+        cursor: pointer;
+    }
+
+        .clear-search-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+
+    /* =====================================================
+       STATUS FILTER
+    ====================================================== */
+
+    .status-filter-wrapper label {
+        display: block;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-select-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 46px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+        .status-select-wrapper > i:first-child {
+            position: absolute;
+            left: 14px;
+            color: #64748b;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .status-select-wrapper > i:last-child {
+            position: absolute;
+            right: 13px;
+            color: #94a3b8;
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+        .status-select-wrapper select {
+            width: 100%;
+            height: 100%;
+            padding: 0 35px;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #334155;
+            font-size: 13px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+
+    /* =====================================================
+       SEARCH RESULT
+    ====================================================== */
+
+    .search-result {
+        height: 46px;
+        display: flex;
+        align-items: center;
+        color: #64748b;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    #roomResultText {
+        padding: 8px 12px;
+        border-radius: 7px;
+        background: #f8fafc;
+    }
+
+
+    /* =====================================================
+       TABLE CARD
+    ====================================================== */
+
+    .room-table-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 7px 22px rgba(15, 23, 42, .05);
+    }
+
+    .room-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 21px 24px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+        .room-table-header h2 {
+            margin: 0;
+            color: #172554;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+    .total-room-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .room-table-body {
+        padding: 0;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+
+    /* =====================================================
+       TABLE
+    ====================================================== */
+
+    .room-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+        .room-table thead th {
+            padding: 15px 18px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            white-space: nowrap;
+        }
+
+        .room-table tbody td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #eef2f7;
+            vertical-align: middle;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        .room-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .room-table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .room-table tbody tr:hover {
+                background: #f8fbff;
+            }
+
+    .image-column {
+        width: 110px;
+    }
+
+    .action-column {
+        width: 145px;
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       ROOM IMAGE
+    ====================================================== */
+
+    .room-image-cell {
+        width: 110px;
+    }
+
+    .room-thumbnail,
+    .room-image-placeholder {
+        width: 82px;
+        height: 58px;
+        border-radius: 8px;
+    }
+
+    .room-thumbnail {
+        display: block;
+        object-fit: cover;
+        border: 1px solid #e2e8f0;
+    }
+
+    .room-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: #94a3b8;
+        font-size: 18px;
+    }
+
+
+    /* =====================================================
+       ROOM NUMBER
+    ====================================================== */
+
+    .room-number {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .room-number-icon {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 13px;
+    }
+
+    .room-number strong {
+        color: #172554;
+        font-size: 15px;
+    }
+
+
+    /* =====================================================
+       ROOM TYPE
+    ====================================================== */
+
+    .room-type {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 7px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       PRICE
+    ====================================================== */
+
+    .room-price {
+        color: #172554;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .room-price span {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+
+    /* =====================================================
+       STATUS
+    ====================================================== */
+
+    .room-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status-available {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-occupied {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-cleaning {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .status-maintenance {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    .status-default {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+
+    /* =====================================================
+       ACTIONS
+    ====================================================== */
+
+    .room-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .delete-form {
+        display: inline;
+        margin: 0;
+    }
+
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 7px;
+        text-decoration: none !important;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .action-view {
+        background: #eff6ff;
+        color: #2563eb !important;
+    }
+
+        .action-view:hover {
+            background: #dbeafe;
+            color: #1d4ed8 !important;
+        }
+
+    .action-edit {
+        background: #fef3c7;
+        color: #d97706 !important;
+    }
+
+        .action-edit:hover {
+            background: #fde68a;
+            color: #b45309 !important;
+        }
+
+    .action-delete {
+        background: #fee2e2;
+        color: #dc2626 !important;
+    }
+
+        .action-delete:hover {
+            background: #fecaca;
+            color: #b91c1c !important;
+        }
+
+
+    /* =====================================================
+       NO RESULT
+    ====================================================== */
+
+    .no-search-result {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .no-search-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #94a3b8;
+        font-size: 23px;
+    }
+
+    .no-search-result h3 {
+        margin: 0 0 7px;
+        color: #334155;
+        font-size: 18px;
+    }
+
+    .no-search-result p {
+        margin: 0 0 18px;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .btn-reset-search {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 15px;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .btn-reset-search:hover {
+            background: #f8fafc;
+        }
+
+
+    /* =====================================================
+       EMPTY
+    ====================================================== */
+
+    .empty-room-state {
+        padding: 75px 20px;
+        text-align: center;
+    }
+
+    .empty-room-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 27px;
+    }
+
+    .empty-room-state h3 {
+        margin: 0 0 7px;
+        color: #334155;
+        font-size: 19px;
+    }
+
+    .empty-room-state p {
+        margin: 0 0 20px;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+    @@media (max-width: 1000px) {
+
+        .room-management-page {
+            padding: 30px 25px 50px;
+        }
+
+        .search-card-body {
+            grid-template-columns: 1fr 220px;
+        }
+
+        .search-result {
+            grid-column: 1 / -1;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .room-management-page {
+            padding: 25px 15px 40px;
+        }
+
+        .room-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .btn-add-room {
+            width: 100%;
+        }
+
+        .search-card-body {
+            grid-template-columns: 1fr;
+        }
+
+        .search-result {
+            grid-column: auto;
+        }
+
+        .room-table-header {
+            gap: 15px;
+        }
+
+            .room-table-header h2 {
+                font-size: 17px;
+            }
+    }
+</style>
+
+
+<script>
+
+    /* =====================================================
+       SEARCH VARIABLES
+    ====================================================== */
+
+    var searchInput =
+        document.getElementById("roomSearch");
+
+    var statusFilter =
+        document.getElementById("statusFilter");
+
+    var clearButton =
+        document.getElementById("clearSearch");
+
+    var roomRows =
+        document.querySelectorAll(".room-row");
+
+    var noSearchResult =
+        document.getElementById("noSearchResult");
+
+    var resultText =
+        document.getElementById("roomResultText");
+
+    var totalRoomCount =
+        document.getElementById("totalRoomCount");
+
+
+    /* =====================================================
+       FILTER ROOMS
+    ====================================================== */
+
+    function filterRooms() {
+
+        var keyword =
+            searchInput.value
+                .toLowerCase()
+                .trim();
+
+        var selectedStatus =
+            statusFilter.value
+                .toLowerCase()
+                .trim();
+
+        var visibleCount = 0;
+
+
+        roomRows.forEach(function (row) {
+
+            var roomNumber =
+                (row.getAttribute(
+                    "data-room-number"
+                ) || "")
+                    .toLowerCase();
+
+            var roomType =
+                (row.getAttribute(
+                    "data-room-type"
+                ) || "")
+                    .toLowerCase();
+
+            var roomStatus =
+                (row.getAttribute(
+                    "data-room-status"
+                ) || "")
+                    .toLowerCase();
+
+
+            /*
+             * Tìm kiếm theo:
+             * - Số phòng
+             * - Loại phòng
+             * - Trạng thái
+             */
+
+            var matchKeyword =
+                keyword === "" ||
+                roomNumber.indexOf(keyword) !== -1 ||
+                roomType.indexOf(keyword) !== -1 ||
+                roomStatus.indexOf(keyword) !== -1;
+
+
+            /*
+             * Lọc trạng thái
+             */
+
+            var matchStatus =
+                selectedStatus === "" ||
+                roomStatus === selectedStatus;
+
+
+            if (matchKeyword && matchStatus) {
+
+                row.style.display = "";
+
+                visibleCount++;
+
+            }
+            else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        /* =========================================
+           CLEAR BUTTON
+        ========================================== */
+
+        if (
+            keyword !== "" ||
+            selectedStatus !== ""
+        ) {
+
+            clearButton.style.display =
+                "block";
+
+        }
+        else {
+
+            clearButton.style.display =
+                "none";
+
+        }
+
+
+        /* =========================================
+           RESULT TEXT
+        ========================================== */
+
+        var totalCount =
+            roomRows.length;
+
+
+        if (
+            keyword === "" &&
+            selectedStatus === ""
+        ) {
+
+            resultText.textContent =
+                "Hiển thị tất cả " +
+                totalCount +
+                " phòng";
+
+        }
+        else {
+
+            resultText.textContent =
+                "Tìm thấy " +
+                visibleCount +
+                "/" +
+                totalCount +
+                " phòng";
+
+        }
+
+
+        /* =========================================
+           TOTAL BADGE
+        ========================================== */
+
+        totalRoomCount.textContent =
+            visibleCount;
+
+
+        /* =========================================
+           NO RESULT
+        ========================================== */
+
+        if (visibleCount === 0) {
+
+            noSearchResult.style.display =
+                "block";
+
+        }
+        else {
+
+            noSearchResult.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CLEAR SEARCH
+    ====================================================== */
+
+    function clearRoomSearch() {
+
+        searchInput.value = "";
+
+        statusFilter.value = "";
+
+        filterRooms();
+
+        searchInput.focus();
+
+    }
+
+
+    /* =====================================================
+       CLEAR BUTTON
+    ====================================================== */
+
+    clearButton.addEventListener(
+        "click",
+        function () {
+
+            clearRoomSearch();
+
+        }
+    );
+
+
+    /* =====================================================
+       SEARCH EVENT
+    ====================================================== */
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            filterRooms();
+
+        }
+    );
+
+
+    /* =====================================================
+       STATUS EVENT
+    ====================================================== */
+
+    statusFilter.addEventListener(
+        "change",
+        function () {
+
+            filterRooms();
+
+        }
+    );
+
+
+    /* =====================================================
+       DELETE CONFIRM
+    ====================================================== */
+
+    function confirmDelete(roomNumber) {
+
+        return confirm(
+            "Bạn có chắc chắn muốn xóa phòng " +
+            roomNumber +
+            " không?\n\n" +
+            "Ảnh của phòng cũng sẽ bị xóa khỏi hệ thống."
+        );
+
+    }
+
+
+    /* =====================================================
+       INITIALIZE
+    ====================================================== */
+
+    filterRooms();
+
+</script>

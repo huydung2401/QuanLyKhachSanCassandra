@@ -1,0 +1,1530 @@
+﻿@model QuanLyKhachSan.Models.UserRoomDetailViewModel
+
+@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    ViewBag.Title =
+        "Chi tiết phòng " + Model.RoomNumber;
+
+    var image =
+        string.IsNullOrWhiteSpace(Model.ImageUrl)
+            ? "~/Content/Images/Rooms/1.jpg"
+            : Model.ImageUrl;
+
+    var isAvailable =
+        string.Equals(
+            Model.Status,
+            "Available",
+            StringComparison.OrdinalIgnoreCase
+        );
+}
+
+
+<style>
+
+    /* =========================================================
+       ROOM DETAIL PAGE
+       ========================================================= */
+
+    .room-detail-page {
+        background: #f6f8fb;
+        color: #182033;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+        /* =========================================================
+       CONTAINER
+       ========================================================= */
+
+        .room-detail-page .detail-container {
+            width: 1180px;
+            max-width: calc(100% - 40px);
+            margin: 0 auto;
+        }
+
+
+    /* =========================================================
+       BREADCRUMB
+       ========================================================= */
+
+    .room-breadcrumb {
+        background: #ffffff;
+        border-bottom: 1px solid #e8ebf0;
+        padding: 18px 0;
+    }
+
+    .room-breadcrumb-inner {
+        width: 1180px;
+        max-width: calc(100% - 40px);
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+    }
+
+    .room-breadcrumb a {
+        color: #2463eb;
+        text-decoration: none;
+    }
+
+        .room-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+    .room-breadcrumb span {
+        color: #a0a7b4;
+    }
+
+    .room-breadcrumb strong {
+        color: #4d5563;
+        font-weight: 500;
+    }
+
+
+    /* =========================================================
+       MAIN DETAIL
+       ========================================================= */
+
+    .room-main-section {
+        padding: 42px 0 55px;
+    }
+
+
+    .room-detail-box {
+        background: #ffffff;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 15px 45px rgba(24, 32, 51, 0.08);
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    }
+
+
+    /* =========================================================
+       IMAGE
+       ========================================================= */
+
+    .room-detail-image {
+        position: relative;
+        min-height: 560px;
+        background: #e9edf3;
+        overflow: hidden;
+    }
+
+
+        .room-detail-image img {
+            width: 100%;
+            height: 100%;
+            min-height: 560px;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+
+        .room-detail-image:hover img {
+            transform: scale(1.03);
+        }
+
+
+    /* STATUS */
+
+    .room-status {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        padding: 10px 16px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #ffffff;
+        z-index: 2;
+    }
+
+
+        .room-status.available {
+            background: #16a56a;
+        }
+
+
+        .room-status.unavailable {
+            background: #dc3545;
+        }
+
+
+    /* =========================================================
+       ROOM INFORMATION
+       ========================================================= */
+
+    .room-detail-content {
+        padding: 46px 45px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+
+    .room-label {
+        color: #2463eb;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+    }
+
+
+    .room-detail-content h1 {
+        margin: 0 0 15px;
+        font-size: 42px;
+        line-height: 1.15;
+        font-weight: 700;
+        color: #172033;
+    }
+
+
+    /* =========================================================
+       RATING
+       ========================================================= */
+
+    .room-rating {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 22px;
+        font-size: 15px;
+    }
+
+
+        .room-rating .stars {
+            color: #f5a623;
+            letter-spacing: 2px;
+            font-size: 18px;
+        }
+
+
+        .room-rating strong {
+            font-size: 17px;
+            color: #172033;
+        }
+
+
+        .room-rating span:last-child {
+            color: #7b8494;
+        }
+
+
+    /* =========================================================
+       PRICE
+       ========================================================= */
+
+    .room-price {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+
+        .room-price strong {
+            font-size: 31px;
+            color: #2463eb;
+            font-weight: 700;
+        }
+
+
+        .room-price span {
+            color: #8a92a1;
+            font-size: 15px;
+        }
+
+
+    /* =========================================================
+       DESCRIPTION
+       ========================================================= */
+
+    .room-description {
+        color: #697386;
+        font-size: 16px;
+        line-height: 1.8;
+        margin: 0 0 28px;
+    }
+
+
+    /* =========================================================
+       SPECIFICATIONS
+       ========================================================= */
+
+    .room-specs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-bottom: 30px;
+    }
+
+
+    .room-spec {
+        border: 1px solid #e8ebf0;
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background: #fafbfd;
+    }
+
+
+        .room-spec i {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #edf3ff;
+            color: #2463eb;
+            font-size: 16px;
+        }
+
+
+        .room-spec small {
+            display: block;
+            color: #8992a2;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+
+        .room-spec strong {
+            display: block;
+            color: #20293a;
+            font-size: 14px;
+        }
+
+
+    /* =========================================================
+       BOOK BUTTON
+       ========================================================= */
+
+    .room-book-btn {
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 22px;
+        background: #2463eb;
+        color: #ffffff !important;
+        text-align: center;
+        text-decoration: none !important;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+
+        .room-book-btn:hover {
+            background: #174fc7;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(36, 99, 235, 0.25);
+        }
+
+
+        .room-book-btn.disabled {
+            background: #aab1bd;
+            cursor: not-allowed;
+        }
+
+
+    /* =========================================================
+       AMENITIES
+       ========================================================= */
+
+    .room-section {
+        padding: 65px 0;
+        background: #ffffff;
+    }
+
+
+    .room-section-title {
+        margin-bottom: 35px;
+    }
+
+
+        .room-section-title span {
+            display: block;
+            color: #2463eb;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 9px;
+        }
+
+
+        .room-section-title h2 {
+            margin: 0 0 10px;
+            font-size: 32px;
+            color: #172033;
+        }
+
+
+        .room-section-title p {
+            margin: 0;
+            color: #7d8695;
+            font-size: 15px;
+        }
+
+
+    .amenity-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+    }
+
+
+    .amenity-card {
+        border: 1px solid #e7eaf0;
+        border-radius: 14px;
+        padding: 22px 12px;
+        text-align: center;
+        background: #ffffff;
+        transition: all 0.25s ease;
+    }
+
+
+        .amenity-card:hover {
+            transform: translateY(-4px);
+            border-color: #cbd9fb;
+            box-shadow: 0 10px 25px rgba(24, 32, 51, 0.07);
+        }
+
+
+        .amenity-card i {
+            display: block;
+            color: #2463eb;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+
+        .amenity-card span {
+            font-size: 13px;
+            color: #4e5869;
+        }
+
+
+    /* =========================================================
+       RECOMMENDED ROOMS
+       ========================================================= */
+
+    .recommended-section {
+        padding: 70px 0;
+        background: #f6f8fb;
+    }
+
+
+    .recommended-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+
+        .recommended-header h2 {
+            margin: 0;
+            color: #172033;
+            font-size: 32px;
+        }
+
+
+        .recommended-header p {
+            margin: 8px 0 0;
+            color: #7d8695;
+        }
+
+
+    .recommended-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+
+    .recommended-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(24, 32, 51, 0.07);
+        transition: all 0.3s ease;
+    }
+
+
+        .recommended-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 40px rgba(24, 32, 51, 0.12);
+        }
+
+
+    .recommended-image {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+        background: #e9edf3;
+    }
+
+
+        .recommended-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+
+    .recommended-card:hover
+    .recommended-image img {
+        transform: scale(1.05);
+    }
+
+
+    .recommended-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        background: #2463eb;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+
+    .recommended-content {
+        padding: 21px;
+    }
+
+
+    .recommended-room-number {
+        color: #2463eb;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+
+    .recommended-content h3 {
+        margin: 7px 0 12px;
+        font-size: 22px;
+        color: #172033;
+    }
+
+
+    .recommended-price {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        margin-bottom: 17px;
+    }
+
+
+        .recommended-price strong {
+            font-size: 20px;
+            color: #172033;
+        }
+
+
+        .recommended-price span {
+            color: #8a92a1;
+            font-size: 13px;
+        }
+
+
+    .recommended-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 15px;
+        border-top: 1px solid #edf0f4;
+    }
+
+
+    .recommended-status {
+        color: #16a56a;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+    .recommended-link {
+        color: #2463eb;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+
+        .recommended-link:hover {
+            text-decoration: underline;
+        }
+
+
+    /* =========================================================
+       REVIEWS
+       ========================================================= */
+
+    .reviews-section {
+        padding: 70px 0;
+        background: #ffffff;
+    }
+
+
+    .review-overview {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 45px;
+        padding: 30px;
+        border: 1px solid #e8ebf0;
+        border-radius: 18px;
+        margin-bottom: 28px;
+    }
+
+
+    .review-score {
+        text-align: center;
+        border-right: 1px solid #e8ebf0;
+        padding-right: 30px;
+    }
+
+
+        .review-score strong {
+            display: block;
+            font-size: 52px;
+            color: #172033;
+        }
+
+
+        .review-score .stars {
+            color: #f5a623;
+            letter-spacing: 2px;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+
+        .review-score span {
+            color: #8992a2;
+            font-size: 13px;
+        }
+
+
+    .review-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+
+    .review-card {
+        display: flex;
+        gap: 15px;
+        padding: 22px;
+        border: 1px solid #e8ebf0;
+        border-radius: 14px;
+        background: #ffffff;
+    }
+
+
+    .review-avatar {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #edf3ff;
+        color: #2463eb;
+        font-weight: 700;
+    }
+
+
+    .review-card strong {
+        color: #172033;
+        font-size: 14px;
+    }
+
+
+    .review-card .stars {
+        color: #f5a623;
+        font-size: 13px;
+        margin: 5px 0;
+    }
+
+
+    .review-card p {
+        margin: 0;
+        color: #697386;
+        line-height: 1.6;
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @@media (max-width: 992px) {
+
+        .room-detail-box {
+            grid-template-columns: 1fr;
+        }
+
+        .room-detail-image {
+            min-height: 420px;
+        }
+
+            .room-detail-image img {
+                min-height: 420px;
+            }
+
+        .amenity-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .recommended-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .room-detail-page .detail-container {
+            max-width: calc(100% - 24px);
+        }
+
+        .room-breadcrumb-inner {
+            max-width: calc(100% - 24px);
+        }
+
+        .room-main-section {
+            padding: 20px 0 35px;
+        }
+
+        .room-detail-content {
+            padding: 28px 22px;
+        }
+
+            .room-detail-content h1 {
+                font-size: 32px;
+            }
+
+        .room-detail-image,
+        .room-detail-image img {
+            min-height: 300px;
+        }
+
+        .room-specs {
+            grid-template-columns: 1fr;
+        }
+
+        .amenity-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .recommended-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .recommended-header {
+            display: block;
+        }
+
+        .review-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .review-score {
+            border-right: none;
+            border-bottom: 1px solid #e8ebf0;
+            padding: 0 0 25px;
+        }
+
+        .review-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="room-detail-page">
+
+
+    <!-- =====================================================
+         BREADCRUMB
+         ===================================================== -->
+
+    <div class="room-breadcrumb">
+
+        <div class="room-breadcrumb-inner">
+
+            <a href="@Url.Action("Index", "UserHome")">
+                Trang chủ
+            </a>
+
+            <span>/</span>
+
+            <a href="@Url.Action("Index", "UserHome")#rooms">
+                Phòng
+            </a>
+
+            <span>/</span>
+
+            <strong>
+                Phòng @Model.RoomNumber
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CHI TIẾT PHÒNG
+         ===================================================== -->
+
+    <section class="room-main-section">
+
+        <div class="detail-container">
+
+            <div class="room-detail-box">
+
+
+                <!-- =================================================
+                     ẢNH BÊN TRÁI
+                     ================================================= -->
+
+                <div class="room-detail-image">
+
+                    <img src="@Url.Content(image)"
+                         alt="Phòng @Model.RoomNumber - @Model.RoomType" />
+
+                    <span class="room-status
+                        @(isAvailable ? "available" : "unavailable")">
+
+                        @(isAvailable
+                            ? "CÒN PHÒNG"
+                            : Model.Status.ToUpper())
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     THÔNG TIN BÊN PHẢI
+                     ================================================= -->
+
+                <div class="room-detail-content">
+
+                    <div class="room-label">
+                        ROOM @Model.RoomNumber
+                    </div>
+
+
+                    <h1>
+                        Phòng @Model.RoomType
+                    </h1>
+
+
+                    <div class="room-rating">
+
+                        <span class="stars">
+                            ★★★★★
+                        </span>
+
+                        <strong>
+                            @Model.Rating.ToString("0.0")
+                        </strong>
+
+                        <span>
+                            (@Model.ReviewCount đánh giá)
+                        </span>
+
+                    </div>
+
+
+                    <div class="room-price">
+
+                        <strong>
+                            @Model.PricePerNight.ToString("N0") ₫
+                        </strong>
+
+                        <span>
+                            / đêm
+                        </span>
+
+                    </div>
+
+
+                    <p class="room-description">
+
+                        @(string.IsNullOrWhiteSpace(Model.Description)
+                            ? "Không gian nghỉ dưỡng hiện đại, tiện nghi và thoải mái, được thiết kế để mang đến trải nghiệm lưu trú thư giãn cho khách hàng."
+                            : Model.Description)
+
+                    </p>
+
+
+                    <!-- THÔNG SỐ -->
+
+                    <div class="room-specs">
+
+                        <div class="room-spec">
+
+                            <i class="fa-solid fa-users"></i>
+
+                            <div>
+
+                                <small>
+                                    Sức chứa
+                                </small>
+
+                                <strong>
+                                    @Model.Capacity người
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="room-spec">
+
+                            <i class="fa-solid fa-ruler-combined"></i>
+
+                            <div>
+
+                                <small>
+                                    Diện tích
+                                </small>
+
+                                <strong>
+                                    @Model.Area m²
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="room-spec">
+
+                            <i class="fa-solid fa-bed"></i>
+
+                            <div>
+
+                                <small>
+                                    Loại phòng
+                                </small>
+
+                                <strong>
+                                    @Model.RoomType
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="room-spec">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            <div>
+
+                                <small>
+                                    Trạng thái
+                                </small>
+
+                                <strong>
+
+                                    @(isAvailable
+                                        ? "Có thể đặt"
+                                        : "Không khả dụng")
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ĐẶT PHÒNG -->
+
+                    @if (isAvailable)
+                    {
+                        <a href="@Url.Action("Index", "UserBooking")"
+                           class="room-book-btn">
+
+                            ĐẶT PHÒNG NGAY
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="room-book-btn disabled"
+                                disabled>
+
+                            PHÒNG KHÔNG KHẢ DỤNG
+
+                        </button>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TIỆN NGHI
+         ===================================================== -->
+
+    <section class="room-section">
+
+        <div class="detail-container">
+
+            <div class="room-section-title">
+
+                <span>
+                    COMFORT & EXPERIENCE
+                </span>
+
+                <h2>
+                    Tiện nghi phòng
+                </h2>
+
+                <p>
+                    Mọi tiện nghi cần thiết cho một kỳ nghỉ thoải mái.
+                </p>
+
+            </div>
+
+
+            <div class="amenity-grid">
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-bed"></i>
+                    <span>Giường cao cấp</span>
+                </div>
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span>WiFi miễn phí</span>
+                </div>
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-snowflake"></i>
+                    <span>Điều hòa</span>
+                </div>
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-shower"></i>
+                    <span>Phòng tắm riêng</span>
+                </div>
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-tv"></i>
+                    <span>Smart TV</span>
+                </div>
+
+                <div class="amenity-card">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <span>Trà & cà phê</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="reviews-section">
+
+        <div class="detail-container">
+
+            <div class="room-section-title">
+
+                <span>
+                    GUEST REVIEWS
+                </span>
+
+                <h2>
+                    Đánh giá của khách hàng
+                </h2>
+
+                <p>
+                    Những chia sẻ từ khách hàng đã trải nghiệm phòng.
+                </p>
+
+            </div>
+
+
+            <div class="review-overview">
+
+
+                <div class="review-score">
+
+                    <strong>
+                        @Model.Rating.ToString("0.0")
+                    </strong>
+
+                    <div class="stars">
+                        ★★★★★
+                    </div>
+
+                    <span>
+                        @Model.ReviewCount đánh giá
+                    </span>
+
+                </div>
+
+
+                <div class="review-list">
+
+                    <div class="review-card">
+
+                        <div class="review-avatar">
+                            NA
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Nguyễn Văn An
+                            </strong>
+
+                            <div class="stars">
+                                ★★★★★
+                            </div>
+
+                            <p>
+                                Phòng sạch sẽ, không gian đẹp,
+                                nhân viên phục vụ rất tốt.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="review-card">
+
+                        <div class="review-avatar">
+                            TB
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Trần Thị Bình
+                            </strong>
+
+                            <div class="stars">
+                                ★★★★★
+                            </div>
+
+                            <p>
+                                Phòng rất thoải mái, đầy đủ tiện nghi.
+                                Tôi sẽ quay lại trong chuyến đi tiếp theo.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PHÒNG ĐỀ XUẤT
+         ===================================================== -->
+
+    <section class="recommended-section">
+
+        <div class="detail-container">
+
+
+            <div class="recommended-header">
+
+                <div>
+
+                    <h2>
+                        Phòng có thể bạn quan tâm
+                    </h2>
+
+                    <p>
+                        Khám phá thêm những lựa chọn phù hợp cho kỳ nghỉ của bạn.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="recommended-grid">
+
+
+                <!-- =================================================
+                     PHÒNG 101
+                     ================================================= -->
+
+                @if (Model.RoomNumber != 101)
+                {
+                    <div class="recommended-card">
+
+                        <a href="@Url.Action(
+                            "Details",
+                            "UserRoom",
+                            new { id = 101 })">
+
+                            <div class="recommended-image">
+
+                                <img src="@Url.Content(
+                                    "~/Content/Images/Rooms/1.jpg")"
+                                     alt="Phòng 101" />
+
+                                <span class="recommended-badge">
+                                    AVAILABLE
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="recommended-content">
+
+                            <div class="recommended-room-number">
+                                ROOM 101
+                            </div>
+
+                            <h3>
+                                Standard
+                            </h3>
+
+                            <div class="recommended-price">
+
+                                <strong>
+                                    800.000 ₫
+                                </strong>
+
+                                <span>
+                                    / đêm
+                                </span>
+
+                            </div>
+
+
+                            <div class="recommended-footer">
+
+                                <span class="recommended-status">
+                                    ● Có thể đặt
+                                </span>
+
+                                <a href="@Url.Action(
+                                    "Details",
+                                    "UserRoom",
+                                    new { id = 101 })"
+                                   class="recommended-link">
+
+                                    Xem chi tiết →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+
+                <!-- =================================================
+                     PHÒNG 102
+                     ================================================= -->
+
+                @if (Model.RoomNumber != 102)
+                {
+                    <div class="recommended-card">
+
+                        <a href="@Url.Action(
+                            "Details",
+                            "UserRoom",
+                            new { id = 102 })">
+
+                            <div class="recommended-image">
+
+                                <img src="@Url.Content(
+                                    "~/Content/Images/Rooms/2.jpg")"
+                                     alt="Phòng 102" />
+
+                                <span class="recommended-badge">
+                                    OCCUPIED
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="recommended-content">
+
+                            <div class="recommended-room-number">
+                                ROOM 102
+                            </div>
+
+                            <h3>
+                                Standard
+                            </h3>
+
+                            <div class="recommended-price">
+
+                                <strong>
+                                    800.000 ₫
+                                </strong>
+
+                                <span>
+                                    / đêm
+                                </span>
+
+                            </div>
+
+
+                            <div class="recommended-footer">
+
+                                <span style="color:#dc3545;"
+                                      class="recommended-status">
+
+                                    ● Đang thuê
+
+                                </span>
+
+                                <a href="@Url.Action(
+                                    "Details",
+                                    "UserRoom",
+                                    new { id = 102 })"
+                                   class="recommended-link">
+
+                                    Xem chi tiết →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+
+                <!-- =================================================
+                     PHÒNG 201
+                     ================================================= -->
+
+                @if (Model.RoomNumber != 201)
+                {
+                    <div class="recommended-card">
+
+                        <a href="@Url.Action(
+                            "Details",
+                            "UserRoom",
+                            new { id = 201 })">
+
+                            <div class="recommended-image">
+
+                                <img src="@Url.Content(
+                                    "~/Content/Images/Rooms/3.jpg")"
+                                     alt="Phòng 201" />
+
+                                <span class="recommended-badge">
+                                    AVAILABLE
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="recommended-content">
+
+                            <div class="recommended-room-number">
+                                ROOM 201
+                            </div>
+
+                            <h3>
+                                Deluxe
+                            </h3>
+
+                            <div class="recommended-price">
+
+                                <strong>
+                                    1.200.000 ₫
+                                </strong>
+
+                                <span>
+                                    / đêm
+                                </span>
+
+                            </div>
+
+
+                            <div class="recommended-footer">
+
+                                <span class="recommended-status">
+                                    ● Có thể đặt
+                                </span>
+
+                                <a href="@Url.Action(
+                                    "Details",
+                                    "UserRoom",
+                                    new { id = 201 })"
+                                   class="recommended-link">
+
+                                    Xem chi tiết →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+
+                <!-- =================================================
+                     PHÒNG 301
+                     ================================================= -->
+
+                @if (Model.RoomNumber != 301)
+                {
+                    <div class="recommended-card">
+
+                        <a href="@Url.Action(
+                            "Details",
+                            "UserRoom",
+                            new { id = 301 })">
+
+                            <div class="recommended-image">
+
+                                <img src="@Url.Content(
+                                    "~/Content/Images/Rooms/4.jpg")"
+                                     alt="Phòng 301" />
+
+                                <span class="recommended-badge">
+                                    MAINTENANCE
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <div class="recommended-content">
+
+                            <div class="recommended-room-number">
+                                ROOM 301
+                            </div>
+
+                            <h3>
+                                Suite
+                            </h3>
+
+                            <div class="recommended-price">
+
+                                <strong>
+                                    2.000.000 ₫
+                                </strong>
+
+                                <span>
+                                    / đêm
+                                </span>
+
+                            </div>
+
+
+                            <div class="recommended-footer">
+
+                                <span style="color:#dc3545;"
+                                      class="recommended-status">
+
+                                    ● Bảo trì
+
+                                </span>
+
+                                <a href="@Url.Action(
+                                    "Details",
+                                    "UserRoom",
+                                    new { id = 301 })"
+                                   class="recommended-link">
+
+                                    Xem chi tiết →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ĐÁNH GIÁ
+         ===================================================== -->
+
+
+
+
+</div>

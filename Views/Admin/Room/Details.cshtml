@@ -1,0 +1,796 @@
+﻿@model QuanLyKhachSan.Models.Room
+
+@{
+    ViewBag.Title = "Chi tiết phòng";
+
+    string imageUrl = Model.ImageUrl;
+
+    if (!string.IsNullOrWhiteSpace(imageUrl))
+    {
+        imageUrl = imageUrl.Trim();
+
+        if (!imageUrl.StartsWith("/") &&
+            !imageUrl.StartsWith("~/") &&
+            !imageUrl.StartsWith("http://") &&
+            !imageUrl.StartsWith("https://"))
+        {
+            imageUrl = "/" + imageUrl.TrimStart('/');
+        }
+    }
+
+    string statusClass = "room-status-default";
+    string statusText = Model.Status;
+
+    if (string.Equals(
+        Model.Status,
+        "Available",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        statusClass = "room-status-available";
+        statusText = "Phòng trống";
+    }
+    else if (string.Equals(
+        Model.Status,
+        "Occupied",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        statusClass = "room-status-occupied";
+        statusText = "Đang thuê";
+    }
+    else if (string.Equals(
+        Model.Status,
+        "Cleaning",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        statusClass = "room-status-cleaning";
+        statusText = "Đang dọn";
+    }
+    else if (string.Equals(
+        Model.Status,
+        "Maintenance",
+        StringComparison.OrdinalIgnoreCase))
+    {
+        statusClass = "room-status-maintenance";
+        statusText = "Bảo trì";
+    }
+}
+
+<div class="room-detail-page">
+
+    <!-- PAGE HEADER -->
+    <div class="room-detail-header">
+
+        <div>
+            <div class="page-label">
+                QUẢN LÝ PHÒNG
+            </div>
+
+            <h1>
+                Chi tiết phòng @Model.RoomNumber
+            </h1>
+
+            <p>
+                Xem thông tin chi tiết và trạng thái của phòng.
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <a href="@Url.Action(
+                "Edit",
+                "Room",
+                new
+                {
+                    hotelId = Model.HotelId,
+                    roomNumber = Model.RoomNumber
+                })"
+               class="btn-edit-room">
+
+                <i class="fa-solid fa-pen"></i>
+
+                Sửa phòng
+
+            </a>
+
+            <a href="@Url.Action(
+                "Index",
+                "Room",
+                new
+                {
+                    hotelId = Model.HotelId
+                })"
+               class="btn-back-room">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Quay lại
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+
+    <div class="room-detail-grid">
+
+        <!-- IMAGE CARD -->
+
+        <div class="room-image-card">
+
+            <div class="room-image-wrapper">
+
+                @if (!string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    <img src="@Url.Content(imageUrl)"
+                         alt="Phòng @Model.RoomNumber"
+                         class="room-main-image"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                    <div class="room-image-fallback"
+                         style="display:none;">
+
+                        <i class="fa-solid fa-image"></i>
+
+                        <span>
+                            Không thể tải ảnh phòng
+                        </span>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="room-image-fallback">
+
+                        <i class="fa-solid fa-image"></i>
+
+                        <span>
+                            Phòng chưa có ảnh
+                        </span>
+
+                    </div>
+                }
+
+            </div>
+
+            <div class="room-image-caption">
+
+                <div>
+                    <span class="caption-label">
+                        PHÒNG
+                    </span>
+
+                    <strong>
+                        @Model.RoomNumber
+                    </strong>
+                </div>
+
+                <div class="room-type-small">
+                    @Model.RoomType
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFORMATION CARD -->
+
+        <div class="room-info-card">
+
+            <div class="room-info-header">
+
+                <div>
+
+                    <span class="section-label">
+                        THÔNG TIN PHÒNG
+                    </span>
+
+                    <h2>
+                        Phòng @Model.RoomNumber
+                    </h2>
+
+                </div>
+
+                <div class="@statusClass">
+                    <span class="status-dot"></span>
+                    @statusText
+                </div>
+
+            </div>
+
+
+            <div class="room-info-body">
+
+                <!-- HOTEL -->
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        <i class="fa-solid fa-hotel"></i>
+                    </div>
+
+                    <div class="info-content">
+
+                        <span>
+                            Khách sạn
+                        </span>
+
+                        <strong>
+                            @Model.HotelId
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROOM NUMBER -->
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        <i class="fa-solid fa-door-open"></i>
+                    </div>
+
+                    <div class="info-content">
+
+                        <span>
+                            Số phòng
+                        </span>
+
+                        <strong>
+                            @Model.RoomNumber
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROOM TYPE -->
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        <i class="fa-solid fa-bed"></i>
+                    </div>
+
+                    <div class="info-content">
+
+                        <span>
+                            Loại phòng
+                        </span>
+
+                        <strong>
+                            @Model.RoomType
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRICE -->
+
+                <div class="info-item price-item">
+
+                    <div class="info-icon price-icon">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+
+                    <div class="info-content">
+
+                        <span>
+                            Giá phòng / đêm
+                        </span>
+
+                        <strong class="room-price">
+                            @Model.PricePerNight.ToString("#,##0") ₫
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="info-content">
+
+                        <span>
+                            Trạng thái
+                        </span>
+
+                        <strong>
+                            @statusText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOTTOM ACTIONS -->
+
+    <div class="room-bottom-actions">
+
+        <a href="@Url.Action(
+            "Edit",
+            "Room",
+            new
+            {
+                hotelId = Model.HotelId,
+                roomNumber = Model.RoomNumber
+            })"
+           class="btn-primary-room">
+
+            <i class="fa-solid fa-pen-to-square"></i>
+
+            Chỉnh sửa phòng
+
+        </a>
+
+
+        <a href="@Url.Action(
+            "Index",
+            "Room",
+            new
+            {
+                hotelId = Model.HotelId
+            })"
+           class="btn-secondary-room">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Danh sách phòng
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* =========================================
+       PAGE
+    ========================================= */
+
+    .room-detail-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 35px 45px 60px;
+    }
+
+
+    /* =========================================
+       HEADER
+    ========================================= */
+
+    .room-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .page-label {
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 8px;
+    }
+
+    .room-detail-header h1 {
+        margin: 0;
+        color: #172554;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .room-detail-header p {
+        margin: 8px 0 0;
+        color: #64748b;
+        font-size: 15px;
+    }
+
+
+    /* =========================================
+       HEADER BUTTONS
+    ========================================= */
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-edit-room,
+    .btn-back-room {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 8px;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+    .btn-edit-room {
+        background: #f59e0b;
+        color: #ffffff !important;
+    }
+
+        .btn-edit-room:hover {
+            background: #d97706;
+            color: #ffffff !important;
+        }
+
+    .btn-back-room {
+        background: #ffffff;
+        color: #334155 !important;
+        border: 1px solid #dbe2ea;
+    }
+
+        .btn-back-room:hover {
+            background: #f8fafc;
+            color: #172554 !important;
+        }
+
+
+    /* =========================================
+       MAIN GRID
+    ========================================= */
+
+    .room-detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+        gap: 25px;
+        align-items: stretch;
+    }
+
+
+    /* =========================================
+       IMAGE
+    ========================================= */
+
+    .room-image-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, .06);
+    }
+
+    .room-image-wrapper {
+        width: 100%;
+        height: 430px;
+        background: #f1f5f9;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .room-main-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .room-image-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: #94a3b8;
+        font-size: 15px;
+    }
+
+        .room-image-fallback i {
+            font-size: 55px;
+            color: #cbd5e1;
+        }
+
+    .room-image-caption {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .caption-label {
+        display: block;
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 3px;
+    }
+
+    .room-image-caption strong {
+        color: #172554;
+        font-size: 20px;
+    }
+
+    .room-type-small {
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+
+    /* =========================================
+       INFORMATION CARD
+    ========================================= */
+
+    .room-info-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, .06);
+    }
+
+    .room-info-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 25px 28px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-label {
+        display: block;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        margin-bottom: 5px;
+    }
+
+    .room-info-header h2 {
+        margin: 0;
+        color: #172554;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================
+       STATUS
+    ========================================= */
+
+    .room-status-available,
+    .room-status-occupied,
+    .room-status-cleaning,
+    .room-status-maintenance,
+    .room-status-default {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .room-status-available {
+        color: #15803d;
+        background: #dcfce7;
+    }
+
+    .room-status-occupied {
+        color: #dc2626;
+        background: #fee2e2;
+    }
+
+    .room-status-cleaning {
+        color: #2563eb;
+        background: #dbeafe;
+    }
+
+    .room-status-maintenance {
+        color: #b45309;
+        background: #fef3c7;
+    }
+
+    .room-status-default {
+        color: #475569;
+        background: #e2e8f0;
+    }
+
+
+    /* =========================================
+       INFO BODY
+    ========================================= */
+
+    .room-info-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 10px 28px 25px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 100px;
+        padding: 15px 10px;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .info-icon {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 16px;
+    }
+
+    .info-content span {
+        display: block;
+        color: #94a3b8;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .info-content strong {
+        display: block;
+        color: #172554;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================
+       PRICE
+    ========================================= */
+
+    .price-icon {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .room-price {
+        color: #2563eb !important;
+        font-size: 21px !important;
+    }
+
+
+    /* =========================================
+       BOTTOM BUTTONS
+    ========================================= */
+
+    .room-bottom-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .btn-primary-room,
+    .btn-secondary-room {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+    .btn-primary-room {
+        background: #2563eb;
+        color: #ffffff !important;
+    }
+
+        .btn-primary-room:hover {
+            background: #1d4ed8;
+            color: #ffffff !important;
+        }
+
+    .btn-secondary-room {
+        background: #ffffff;
+        color: #475569 !important;
+        border: 1px solid #dbe2ea;
+    }
+
+        .btn-secondary-room:hover {
+            background: #f8fafc;
+            color: #172554 !important;
+        }
+
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
+    @@media (max-width: 1000px) {
+
+        .room-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .room-image-wrapper {
+            height: 380px;
+        }
+    }
+
+    @@media (max-width: 700px) {
+
+        .room-detail-page {
+            padding: 25px 18px 40px;
+        }
+
+        .room-detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-edit-room,
+        .btn-back-room {
+            flex: 1;
+        }
+
+        .room-info-body {
+            grid-template-columns: 1fr;
+        }
+
+        .room-image-wrapper {
+            height: 300px;
+        }
+
+        .room-bottom-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary-room,
+        .btn-secondary-room {
+            width: 100%;
+        }
+    }
+</style>

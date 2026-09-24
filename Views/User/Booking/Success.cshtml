@@ -1,0 +1,886 @@
+﻿@model QuanLyKhachSan.Models.UserBookingViewModel
+
+@{
+    ViewBag.Title = "Đặt phòng thành công";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    /*
+        ============================================================
+        XỬ LÝ ĐƯỜNG DẪN ẢNH PHÒNG
+        ============================================================
+        Ưu tiên Model.ImageUrl.
+
+        Hỗ trợ:
+        1. https://...
+        2. /Content/Images/Rooms/...
+        3. ~/Content/Images/Rooms/...
+        4. Content/Images/Rooms/...
+        5. Tên file: HOTEL001_101.jpg
+
+        Nếu ImageUrl không có:
+        -> thử HOTEL001_<RoomNumber>.jpg
+        -> .jpeg
+        -> .png
+        -> .webp
+    */
+
+    var imageUrl = Model.ImageUrl;
+
+    Func<string, int, string> ResolveRoomImage = (storedImageUrl, roomNumber) =>
+    {
+        var fallback = "~/Content/Images/Rooms/HOTEL001_" + roomNumber + ".jpg";
+
+        if (string.IsNullOrWhiteSpace(storedImageUrl))
+        {
+            return Url.Content(fallback);
+        }
+
+        var value = storedImageUrl.Trim();
+
+        // Ảnh từ Internet
+        if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        // Đường dẫn ~/...
+        if (value.StartsWith("~/"))
+        {
+            return Url.Content(value);
+        }
+
+        // Đường dẫn /...
+        if (value.StartsWith("/"))
+        {
+            return value;
+        }
+
+        // Content/...
+        if (value.StartsWith("Content/", StringComparison.OrdinalIgnoreCase))
+        {
+            return Url.Content("~/" + value);
+        }
+
+        // Nếu chỉ lưu tên file
+        if (!value.Contains("/"))
+        {
+            return Url.Content("~/Content/Images/Rooms/" + value);
+        }
+
+        // Các trường hợp còn lại
+        return Url.Content("~/" + value.TrimStart('/'));
+    };
+
+    var roomImage = ResolveRoomImage(imageUrl, Model.RoomNumber);
+
+    var bookingId = Model.ErrorMessage;
+
+    // Các ảnh dự phòng
+    var imageFallback1 = Url.Content(
+        "~/Content/Images/Rooms/HOTEL001_" + Model.RoomNumber + ".jpg"
+    );
+
+    var imageFallback2 = Url.Content(
+        "~/Content/Images/Rooms/HOTEL001_" + Model.RoomNumber + ".jpeg"
+    );
+
+    var imageFallback3 = Url.Content(
+        "~/Content/Images/Rooms/HOTEL001_" + Model.RoomNumber + ".png"
+    );
+
+    var imageFallback4 = Url.Content(
+        "~/Content/Images/Rooms/HOTEL001_" + Model.RoomNumber + ".webp"
+    );
+}
+
+<style>
+
+    /* =========================================================
+       SUCCESS PAGE
+       ========================================================= */
+
+    .success-page {
+        min-height: calc(100vh - 80px);
+        background: #f7f8fa;
+        padding: 60px 20px 90px;
+    }
+
+    .success-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       SUCCESS CARD
+       ========================================================= */
+
+    .success-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 10px 40px rgba(0,0,0,.07);
+        overflow: hidden;
+    }
+
+
+    /* =========================================================
+       SUCCESS HEADER
+       ========================================================= */
+
+    .success-top {
+        text-align: center;
+        padding: 50px 30px 35px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .success-icon {
+        width: 82px;
+        height: 82px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #e9f7ef;
+        color: #28a745;
+        font-size: 38px;
+    }
+
+    .success-top .label {
+        display: block;
+        color: #b18b52;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+    }
+
+    .success-top h1 {
+        margin: 0 0 12px;
+        color: #182536;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .success-top p {
+        margin: 0 auto;
+        max-width: 600px;
+        color: #777;
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+
+    /* =========================================================
+       BOOKING CODE
+       ========================================================= */
+
+    .booking-code-box {
+        margin: 30px;
+        padding: 20px 25px;
+        background: #f8f5ef;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .booking-code-label {
+        display: block;
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .booking-code {
+        color: #182536;
+        font-size: 20px;
+        font-weight: 700;
+        word-break: break-all;
+    }
+
+
+    /* =========================================================
+       CONTENT
+       ========================================================= */
+
+    .success-content {
+        padding: 0 30px 35px;
+    }
+
+    .success-section-title {
+        margin: 0 0 20px;
+        color: #182536;
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       ROOM
+       ========================================================= */
+
+    .room-box {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 25px;
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .room-image-wrapper {
+        width: 220px;
+        height: 160px;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #f2f2f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .room-image {
+        width: 220px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 10px;
+        display: block;
+    }
+
+    .room-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #aaa;
+        font-size: 13px;
+        text-align: center;
+    }
+
+        .room-image-placeholder i {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+
+    .room-information {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .room-label {
+        color: #b18b52;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        margin-bottom: 7px;
+    }
+
+    .room-information h2 {
+        margin: 0 0 7px;
+        color: #182536;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .room-type {
+        color: #777;
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .room-price {
+        color: #b18b52;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       INFORMATION GRID
+       ========================================================= */
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .information-item {
+        padding: 17px 18px;
+        background: #fafafa;
+        border-radius: 9px;
+    }
+
+        .information-item span {
+            display: block;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .information-item strong {
+            display: block;
+            color: #182536;
+            font-size: 15px;
+            word-break: break-word;
+        }
+
+
+    /* =========================================================
+       TOTAL
+       ========================================================= */
+
+    .total-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 20px;
+        margin-top: 10px;
+        border-top: 2px solid #eee;
+    }
+
+    .total-label {
+        color: #555;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .total-value {
+        color: #b18b52;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       NOTE
+       ========================================================= */
+
+    .success-note {
+        margin-top: 25px;
+        padding: 18px 20px;
+        background: #f8f5ef;
+        border-radius: 9px;
+        color: #66583f;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .success-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        padding: 0 30px 35px;
+    }
+
+    .success-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 190px;
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+        .success-button.primary {
+            background: #182536;
+            color: #fff;
+        }
+
+            .success-button.primary:hover {
+                background: #b18b52;
+                color: #fff;
+                text-decoration: none;
+            }
+
+        .success-button.secondary {
+            background: #f1f1f1;
+            color: #182536;
+        }
+
+            .success-button.secondary:hover {
+                background: #e5e5e5;
+                color: #182536;
+                text-decoration: none;
+            }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @@media (max-width: 700px) {
+
+        .success-page {
+            padding: 30px 15px 60px;
+        }
+
+        .success-top {
+            padding: 35px 20px 30px;
+        }
+
+            .success-top h1 {
+                font-size: 28px;
+            }
+
+        .success-content {
+            padding: 0 20px 30px;
+        }
+
+        .booking-code-box {
+            margin: 25px 20px;
+        }
+
+        .room-box {
+            grid-template-columns: 1fr;
+        }
+
+        .room-image-wrapper {
+            width: 100%;
+            height: 210px;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 210px;
+        }
+
+        .information-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .total-box {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .success-actions {
+            flex-direction: column;
+            padding: 0 20px 30px;
+        }
+
+        .success-button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="success-page">
+
+    <div class="success-container">
+
+        <div class="success-card">
+
+
+            <!-- =====================================================
+                 SUCCESS HEADER
+                 ===================================================== -->
+
+            <div class="success-top">
+
+                <div class="success-icon">
+
+                    <i class="fa-solid fa-check"></i>
+
+                </div>
+
+
+                <span class="label">
+                    RESERVATION CONFIRMED
+                </span>
+
+
+                <h1>
+                    Đặt phòng thành công!
+                </h1>
+
+
+                <p>
+                    Cảm ơn bạn đã lựa chọn
+                    <strong>Sunrise Hotel</strong>.
+
+                    Thông tin đặt phòng của bạn
+                    đã được ghi nhận thành công.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================================
+                 BOOKING ID
+                 ===================================================== -->
+
+            <div class="booking-code-box">
+
+                <span class="booking-code-label">
+                    MÃ ĐẶT PHÒNG
+                </span>
+
+
+                <div class="booking-code">
+                    @bookingId
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 CONTENT
+                 ===================================================== -->
+
+            <div class="success-content">
+
+
+                <!-- =================================================
+                     ROOM INFORMATION
+                     ================================================= -->
+
+                <h2 class="success-section-title">
+                    Thông tin phòng
+                </h2>
+
+
+                <div class="room-box">
+
+
+                    <!-- ROOM IMAGE -->
+
+                    <div class="room-image-wrapper">
+
+                        <img id="bookingRoomImage"
+                             src="@roomImage"
+                             class="room-image"
+                             alt="Phòng @Model.RoomNumber"
+                             data-fallback-1="@imageFallback1"
+                             data-fallback-2="@imageFallback2"
+                             data-fallback-3="@imageFallback3"
+                             data-fallback-4="@imageFallback4" />
+
+
+                        <div id="roomImagePlaceholder"
+                             class="room-image-placeholder">
+
+                            <i class="fa-solid fa-image"></i>
+
+                            <span>
+                                Chưa có hình ảnh phòng
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ROOM INFORMATION -->
+
+                    <div class="room-information">
+
+                        <span class="room-label">
+                            ROOM @Model.RoomNumber
+                        </span>
+
+
+                        <h2>
+                            Phòng @Model.RoomNumber
+                        </h2>
+
+
+                        <div class="room-type">
+                            @Model.RoomType
+                        </div>
+
+
+                        <div class="room-price">
+                            @Model.PricePerNight.ToString("N0") ₫ / đêm
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     CUSTOMER / STAY INFORMATION
+                     ================================================= -->
+
+                <h2 class="success-section-title">
+                    Thông tin đặt phòng
+                </h2>
+
+
+                <div class="information-grid">
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Họ và tên
+                        </span>
+
+                        <strong>
+                            @Model.FullName
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Số điện thoại
+                        </span>
+
+                        <strong>
+                            @Model.Phone
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Email
+                        </span>
+
+                        <strong>
+                            @Model.Email
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            CCCD / CMND
+                        </span>
+
+                        <strong>
+                            @Model.NationalId
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Ngày nhận phòng
+                        </span>
+
+                        <strong>
+                            @Model.CheckIn.ToString("dd/MM/yyyy")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Ngày trả phòng
+                        </span>
+
+                        <strong>
+                            @Model.CheckOut.ToString("dd/MM/yyyy")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Số đêm
+                        </span>
+
+                        <strong>
+                            @Model.NumberOfNights đêm
+                        </strong>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span>
+                            Số khách
+                        </span>
+
+                        <strong>
+                            @Model.Guests khách
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     TOTAL
+                     ================================================= -->
+
+                <div class="total-box">
+
+                    <span class="total-label">
+                        Tổng tiền
+                    </span>
+
+
+                    <span class="total-value">
+                        @Model.TotalAmount.ToString("N0") ₫
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     NOTE
+                     ================================================= -->
+
+                <div class="success-note">
+
+                    <strong>
+                        Lưu ý:
+                    </strong>
+
+                    Vui lòng lưu lại mã đặt phòng
+
+                    <strong>
+                        @bookingId
+                    </strong>
+
+                    để thuận tiện khi liên hệ với khách sạn.
+
+                    Nhân viên Sunrise Hotel có thể sử dụng
+                    số điện thoại hoặc mã đặt phòng để tra cứu
+                    thông tin đặt phòng của bạn.
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 ACTIONS
+                 ===================================================== -->
+
+            <div class="success-actions">
+
+
+                <a href="@Url.Action("Index", "UserHome")"
+                   class="success-button primary">
+
+                    <i class="fa-solid fa-house"
+                       style="margin-right:8px;"></i>
+
+                    VỀ TRANG CHỦ
+
+                </a>
+
+
+                <a href="@Url.Action("Index", "UserBooking")"
+                   class="success-button secondary">
+
+                    <i class="fa-solid fa-calendar-plus"
+                       style="margin-right:8px;"></i>
+
+                    ĐẶT PHÒNG KHÁC
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+        ============================================================
+        XỬ LÝ ẢNH PHÒNG
+        ============================================================
+
+        Thứ tự:
+
+        1. ImageUrl lấy từ Cassandra
+        2. HOTEL001_<room>.jpg
+        3. HOTEL001_<room>.jpeg
+        4. HOTEL001_<room>.png
+        5. HOTEL001_<room>.webp
+
+        Nếu tất cả đều không tồn tại:
+        -> hiển thị placeholder.
+    */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var image = document.getElementById("bookingRoomImage");
+
+        var placeholder = document.getElementById("roomImagePlaceholder");
+
+        if (!image) {
+            return;
+        }
+
+        var fallbackIndex = 0;
+
+        var fallbacks = [
+            image.getAttribute("data-fallback-1"),
+            image.getAttribute("data-fallback-2"),
+            image.getAttribute("data-fallback-3"),
+            image.getAttribute("data-fallback-4")
+        ];
+
+        image.addEventListener("error", function () {
+
+            if (fallbackIndex < fallbacks.length) {
+
+                var nextImage = fallbacks[fallbackIndex];
+
+                fallbackIndex++;
+
+                if (nextImage &&
+                    image.src !== new URL(nextImage, window.location.origin).href) {
+
+                    image.src = nextImage;
+
+                    return;
+                }
+            }
+
+            // Không còn ảnh nào
+            image.style.display = "none";
+
+            if (placeholder) {
+                placeholder.style.display = "flex";
+            }
+
+        });
+
+    });
+
+</script>

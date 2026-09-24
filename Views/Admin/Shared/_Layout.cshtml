@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewBag.Title - Quản Lý Khách Sạn</title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP LOCAL
+         ===================================================== -->
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/bootstrap.css")" />
+
+
+    <!-- =====================================================
+         FONT AWESOME
+         ===================================================== -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+
+    <!-- =====================================================
+         CUSTOM CSS
+         ===================================================== -->
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/Site.css?v=3")" />
+
+</head>
+
+
+<body>
+
+    <div class="app-wrapper">
+
+
+        <!-- =================================================
+             SIDEBAR
+             ================================================= -->
+
+        <aside class="sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+
+                    <i class="fa-solid fa-hotel"></i>
+
+                </div>
+
+
+                <div class="brand-text">
+
+                    <div class="brand-title">
+                        HOTEL ADMIN
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Management System
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 QUẢN LÝ
+                 ================================================= -->
+
+            <div class="sidebar-section-title">
+                QUẢN LÝ
+            </div>
+
+
+            <nav class="sidebar-menu">
+
+
+                <!-- DASHBOARD -->
+
+                <a href="@Url.Action("Index", "Dashboard")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-chart-pie"></i>
+
+                    </span>
+
+                    <span>
+                        Tổng quan
+                    </span>
+
+                </a>
+
+
+                <!-- HOTEL -->
+
+                <a href="@Url.Action("Index", "Hotel")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-hotel"></i>
+
+                    </span>
+
+                    <span>
+                        Khách sạn
+                    </span>
+
+                </a>
+
+
+                <!-- ROOM -->
+
+                <a href="@Url.Action("Index", "Room")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-bed"></i>
+
+                    </span>
+
+                    <span>
+                        Phòng
+                    </span>
+
+                </a>
+
+
+                <!-- GUEST -->
+
+                <a href="@Url.Action("Index", "Guest")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </span>
+
+                    <span>
+                        Khách hàng
+                    </span>
+
+                </a>
+
+
+                <!-- BOOKING -->
+
+                <a href="@Url.Action("Index", "Booking")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </span>
+
+                    <span>
+                        Đặt phòng
+                    </span>
+
+                </a>
+
+
+                <!-- INVOICE -->
+
+                <a href="#"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                    </span>
+
+                    <span>
+                        Hóa đơn
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- =================================================
+                 HỆ THỐNG
+                 ================================================= -->
+
+            <div class="sidebar-section-title system-title">
+                HỆ THỐNG
+            </div>
+
+
+            <nav class="sidebar-menu">
+
+
+                <!-- SETTINGS -->
+
+                <a href="#"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-gear"></i>
+
+                    </span>
+
+                    <span>
+                        Cài đặt
+                    </span>
+
+                </a>
+
+
+                <!-- CASSANDRA -->
+
+                <a href="@Url.Action("Index", "CassandraTest")"
+                   class="sidebar-link">
+
+                    <span class="menu-icon">
+
+                        <i class="fa-solid fa-database"></i>
+
+                    </span>
+
+                    <span>
+                        Cassandra
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- =================================================
+                 DATABASE STATUS
+                 ================================================= -->
+
+            <div class="sidebar-footer">
+
+                <div class="database-status">
+
+
+                    <span class="status-dot"></span>
+
+
+                    <div>
+
+                        <div class="status-title">
+                            Database
+                        </div>
+
+                        <div class="status-text">
+                            Astra DB Connected
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN CONTENT
+             ================================================= -->
+
+        <main class="main-content">
+
+
+            <!-- =================================================
+                 TOPBAR
+                 ================================================= -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-left">
+
+
+                    <!-- MOBILE MENU -->
+
+                    <button type="button"
+                            class="mobile-menu-btn"
+                            id="mobileMenuButton">
+
+                        <i class="fa-solid fa-bars"></i>
+
+                    </button>
+
+
+                    <!-- PAGE TITLE -->
+
+                    <div class="breadcrumb-text">
+
+                        @ViewBag.Title
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     USER AREA
+                     ================================================= -->
+
+                <div class="topbar-right">
+
+
+                    <!-- NOTIFICATION -->
+
+                    <button type="button"
+                            class="notification-btn">
+
+                        <i class="fa-regular fa-bell"></i>
+
+                        <span class="notification-badge">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <!-- ADMIN -->
+
+                    <div class="admin-profile">
+
+
+                        <div class="admin-avatar">
+
+                            <i class="fa-solid fa-user"></i>
+
+                        </div>
+
+
+                        <div class="admin-info">
+
+                            <div class="admin-name">
+                                Administrator
+                            </div>
+
+                            <div class="admin-role">
+                                Quản trị viên
+                            </div>
+
+                        </div>
+
+
+                        <i class="fa-solid fa-chevron-down profile-arrow"></i>
+
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 PAGE
+                 ================================================= -->
+
+            <div class="page-content">
+
+                @RenderBody()
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+                 ================================================= -->
+
+            <footer class="app-footer">
+
+
+                <span>
+                    © @DateTime.Now.Year Quản Lý Khách Sạn
+                </span>
+
+
+                <span>
+                    ASP.NET MVC 5 · Astra DB
+                </span>
+
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         Không dùng jQuery / Bootstrap JS
+         ===================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                var menuButton =
+                    document.getElementById(
+                        "mobileMenuButton"
+                    );
+
+                if (menuButton) {
+
+                    menuButton.addEventListener(
+                        "click",
+                        function () {
+
+                            var sidebar =
+                                document.querySelector(
+                                    ".sidebar"
+                                );
+
+                            if (sidebar) {
+
+                                sidebar.classList.toggle(
+                                    "sidebar-open"
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

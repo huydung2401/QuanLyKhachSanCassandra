@@ -1,0 +1,1395 @@
+﻿@model QuanLyKhachSan.Models.Room
+
+@{
+    ViewBag.Title = "Thêm phòng";
+}
+
+<div class="room-create-page">
+
+    <!-- =========================================
+         HEADER
+    ========================================= -->
+
+    <div class="room-create-header">
+
+        <div>
+
+            <div class="page-label">
+                QUẢN LÝ PHÒNG
+            </div>
+
+            <h1>
+                Thêm phòng mới
+            </h1>
+
+            <p>
+                Thêm phòng mới vào khách sạn
+                <strong>@Model.HotelId</strong>
+            </p>
+
+        </div>
+
+        <a href="@Url.Action(
+            "Index",
+            "Room",
+            new
+            {
+                hotelId = Model.HotelId
+            })"
+           class="btn-back-room">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Quay lại danh sách
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================================
+         FORM
+    ========================================= -->
+
+    @using (Html.BeginForm(
+        "Create",
+        "Room",
+        FormMethod.Post,
+        new
+        {
+            enctype = "multipart/form-data",
+            @class = "room-create-form"
+        }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(model => model.HotelId)
+
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new
+            {
+                @class = "validation-box"
+            })
+
+
+        <div class="room-create-grid">
+
+
+            <!-- =================================
+                 LEFT - IMAGE
+            ================================== -->
+
+            <div class="image-section">
+
+                <div class="create-card">
+
+                    <div class="create-card-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                HÌNH ẢNH
+                            </span>
+
+                            <h2>
+                                Ảnh phòng
+                            </h2>
+
+                        </div>
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-image"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="create-card-body">
+
+                        <!-- IMAGE PREVIEW -->
+
+                        <div id="imagePreview"
+                             class="image-preview">
+
+                            <div class="image-placeholder">
+
+                                <i class="fa-solid fa-image"></i>
+
+                                <strong>
+                                    Chưa chọn ảnh
+                                </strong>
+
+                                <span>
+                                    Ảnh đại diện của phòng sẽ hiển thị tại đây
+                                </span>
+
+                            </div>
+
+                            <img id="previewImage"
+                                 src=""
+                                 alt="Ảnh phòng"
+                                 style="display:none;" />
+
+                        </div>
+
+
+                        <!-- UPLOAD -->
+
+                        <div class="upload-section">
+
+                            <label class="upload-label">
+                                Ảnh đại diện
+                                <span class="required">*</span>
+                            </label>
+
+                            <label class="upload-box">
+
+                                <input type="file"
+                                       name="roomImage"
+                                       id="roomImage"
+                                       accept=".jpg,.jpeg,.png,.webp"
+                                       onchange="previewRoomImage(this)" />
+
+                                <div class="upload-content">
+
+                                    <div class="upload-icon">
+
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                    </div>
+
+                                    <strong>
+                                        Chọn ảnh phòng
+                                    </strong>
+
+                                    <span>
+                                        Nhấn để chọn ảnh từ máy tính
+                                    </span>
+
+                                    <small>
+                                        JPG, JPEG, PNG hoặc WEBP · Tối đa 5 MB
+                                    </small>
+
+                                </div>
+
+                            </label>
+
+
+                            <!-- FILE NAME -->
+
+                            <div id="selectedFile"
+                                 class="selected-file"
+                                 style="display:none;">
+
+                                <i class="fa-solid fa-file-image"></i>
+
+                                <span id="selectedFileName">
+                                </span>
+
+                                <button type="button"
+                                        onclick="removeRoomImage()"
+                                        class="remove-image-btn">
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <div class="upload-note">
+
+                                <i class="fa-solid fa-circle-info"></i>
+
+                                Nên chọn ảnh rõ nét, tỷ lệ phù hợp
+                                để hiển thị đẹp trên website.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================
+                 RIGHT - INFORMATION
+            ================================== -->
+
+            <div class="information-section">
+
+                <div class="create-card">
+
+                    <div class="create-card-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                THÔNG TIN PHÒNG
+                            </span>
+
+                            <h2>
+                                Cấu hình phòng
+                            </h2>
+
+                        </div>
+
+                        <div class="header-icon">
+
+                            <i class="fa-solid fa-bed"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="create-card-body">
+
+
+                        <!-- HOTEL -->
+
+                        <div class="form-field">
+
+                            <label>
+                                Khách sạn
+                            </label>
+
+                            <div class="readonly-field">
+
+                                <span>
+                                    <i class="fa-solid fa-hotel"></i>
+                                </span>
+
+                                <input type="text"
+                                       value="@Model.HotelId"
+                                       readonly />
+
+                                <i class="fa-solid fa-lock"></i>
+
+                            </div>
+
+                            <small>
+                                Phòng được thêm vào khách sạn đang quản lý.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ROOM NUMBER -->
+
+                        <div class="form-field">
+
+                            <label>
+                                Số phòng
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="normal-input-wrapper">
+
+                                <i class="fa-solid fa-door-open"></i>
+
+                                @Html.EditorFor(
+                                    model => model.RoomNumber,
+                                    new
+                                    {
+                                        htmlAttributes = new
+                                        {
+                                            @class = "normal-input",
+                                            type = "number",
+                                            min = "1",
+                                            required = "required",
+                                            placeholder = "Ví dụ: 101"
+                                        }
+                                    })
+
+                            </div>
+
+                            @Html.ValidationMessageFor(
+                                model => model.RoomNumber,
+                                "",
+                                new
+                                {
+                                    @class = "field-error"
+                                })
+
+                            <small>
+                                Nhập số phòng duy nhất trong khách sạn.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ROOM TYPE -->
+
+                        <div class="form-field">
+
+                            <label>
+                                Loại phòng
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="select-wrapper">
+
+                                <i class="fa-solid fa-bed field-icon"></i>
+
+                                <select name="RoomType"
+                                        required>
+
+                                    <option value="">
+                                        -- Chọn loại phòng --
+                                    </option>
+
+                                    <option value="Standard">
+                                        Standard
+                                    </option>
+
+                                    <option value="Deluxe">
+                                        Deluxe
+                                    </option>
+
+                                    <option value="Suite">
+                                        Suite
+                                    </option>
+
+                                    <option value="VIP">
+                                        VIP
+                                    </option>
+
+                                </select>
+
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+
+                            </div>
+
+                            @Html.ValidationMessageFor(
+                                model => model.RoomType,
+                                "",
+                                new
+                                {
+                                    @class = "field-error"
+                                })
+
+                        </div>
+
+
+                        <!-- PRICE -->
+
+                        <div class="form-field">
+
+                            <label>
+                                Giá phòng / đêm
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="price-input-wrapper">
+
+                                <i class="fa-solid fa-money-bill-wave"></i>
+
+                                @Html.EditorFor(
+                                    model => model.PricePerNight,
+                                    new
+                                    {
+                                        htmlAttributes = new
+                                        {
+                                            @class = "price-input",
+                                            type = "number",
+                                            min = "0",
+                                            step = "1000",
+                                            required = "required",
+                                            placeholder = "Ví dụ: 800000"
+                                        }
+                                    })
+
+                                <span>
+                                    ₫ / đêm
+                                </span>
+
+                            </div>
+
+                            @Html.ValidationMessageFor(
+                                model => model.PricePerNight,
+                                "",
+                                new
+                                {
+                                    @class = "field-error"
+                                })
+
+                            <small>
+                                Nhập giá phòng bằng Việt Nam đồng.
+                            </small>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div class="form-field">
+
+                            <label>
+                                Trạng thái phòng
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="select-wrapper">
+
+                                <i class="fa-solid fa-circle-check field-icon"></i>
+
+                                <select name="Status">
+
+                                    <option value="Available"
+                                            selected>
+                                        Phòng trống
+                                    </option>
+
+                                    <option value="Occupied">
+                                        Đang thuê
+                                    </option>
+
+                                    <option value="Cleaning">
+                                        Đang dọn
+                                    </option>
+
+                                    <option value="Maintenance">
+                                        Bảo trì
+                                    </option>
+
+                                </select>
+
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+
+                            </div>
+
+                            <small>
+                                Phòng mới thường được đặt ở trạng thái
+                                <strong>Phòng trống</strong>.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFORMATION NOTE -->
+
+                <div class="information-note">
+
+                    <div class="information-note-icon">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Kiểm tra thông tin trước khi lưu
+                        </strong>
+
+                        <p>
+                            Hãy đảm bảo số phòng chưa tồn tại,
+                            giá phòng và loại phòng đã được nhập chính xác.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             ACTIONS
+        ================================== -->
+
+        <div class="form-actions">
+
+            <a href="@Url.Action(
+                "Index",
+                "Room",
+                new
+                {
+                    hotelId = Model.HotelId
+                })"
+               class="btn-cancel">
+
+                <i class="fa-solid fa-xmark"></i>
+
+                Hủy
+
+            </a>
+
+
+            <button type="submit"
+                    class="btn-save">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Thêm phòng
+
+            </button>
+
+        </div>
+
+    }
+
+</div>
+
+
+<style>
+
+    /* =========================================
+       PAGE
+    ========================================= */
+
+    .room-create-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 35px 45px 60px;
+    }
+
+
+    /* =========================================
+       HEADER
+    ========================================= */
+
+    .room-create-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .page-label {
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 8px;
+    }
+
+    .room-create-header h1 {
+        margin: 0;
+        color: #172554;
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .room-create-header p {
+        margin: 8px 0 0;
+        color: #64748b;
+        font-size: 15px;
+    }
+
+        .room-create-header p strong {
+            color: #2563eb;
+        }
+
+
+    /* =========================================
+       BACK BUTTON
+    ========================================= */
+
+    .btn-back-room {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #dbe2ea;
+        color: #334155 !important;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all .2s ease;
+    }
+
+        .btn-back-room:hover {
+            background: #f8fafc;
+            color: #172554 !important;
+            border-color: #cbd5e1;
+        }
+
+
+    /* =========================================
+       VALIDATION
+    ========================================= */
+
+    .validation-box {
+        margin-bottom: 20px;
+        padding: 15px 18px;
+        border-radius: 10px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+    }
+
+    .field-error {
+        display: block;
+        margin-top: 6px;
+        color: #dc2626;
+        font-size: 12px;
+    }
+
+
+    /* =========================================
+       GRID
+    ========================================= */
+
+    .room-create-grid {
+        display: grid;
+        grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+        gap: 25px;
+        align-items: start;
+    }
+
+
+    /* =========================================
+       CARD
+    ========================================= */
+
+    .create-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, .06);
+    }
+
+    .create-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 23px 26px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-label {
+        display: block;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        margin-bottom: 5px;
+    }
+
+    .create-card-header h2 {
+        margin: 0;
+        color: #172554;
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .header-icon {
+        width: 43px;
+        height: 43px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 17px;
+    }
+
+    .create-card-body {
+        padding: 26px;
+    }
+
+
+    /* =========================================
+       IMAGE PREVIEW
+    ========================================= */
+
+    .image-preview {
+        width: 100%;
+        height: 350px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 22px;
+    }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+    .image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+        color: #94a3b8;
+        padding: 20px;
+    }
+
+        .image-placeholder i {
+            margin-bottom: 5px;
+            color: #cbd5e1;
+            font-size: 55px;
+        }
+
+        .image-placeholder strong {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .image-placeholder span {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+
+    /* =========================================
+       UPLOAD
+    ========================================= */
+
+    .upload-section {
+        margin-top: 5px;
+    }
+
+    .upload-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .upload-box {
+        position: relative;
+        display: block;
+        width: 100%;
+        min-height: 155px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .upload-box:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .upload-box input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+    .upload-content {
+        min-height: 155px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        text-align: center;
+    }
+
+    .upload-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        border-radius: 12px;
+        background: #dbeafe;
+        color: #2563eb;
+        font-size: 20px;
+    }
+
+    .upload-content strong {
+        color: #334155;
+        font-size: 14px;
+    }
+
+    .upload-content span {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .upload-content small {
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+
+    /* =========================================
+       SELECTED FILE
+    ========================================= */
+
+    .selected-file {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+    }
+
+        .selected-file > i {
+            font-size: 16px;
+        }
+
+        .selected-file span {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+    .remove-image-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 7px;
+        background: #fee2e2;
+        color: #dc2626;
+        cursor: pointer;
+    }
+
+        .remove-image-btn:hover {
+            background: #fecaca;
+        }
+
+
+    /* =========================================
+       NOTE
+    ========================================= */
+
+    .upload-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 12px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+        .upload-note i {
+            color: #2563eb;
+            margin-top: 2px;
+        }
+
+
+    /* =========================================
+       FORM FIELD
+    ========================================= */
+
+    .form-field {
+        margin-bottom: 22px;
+    }
+
+        .form-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-field > label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-field small {
+            display: block;
+            margin-top: 6px;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+
+    /* =========================================
+       READONLY
+    ========================================= */
+
+    .readonly-field {
+        display: flex;
+        align-items: center;
+        height: 46px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+        .readonly-field > span {
+            width: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+
+        .readonly-field input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .readonly-field > i {
+            padding-right: 14px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+
+    /* =========================================
+       NORMAL INPUT
+    ========================================= */
+
+    .normal-input-wrapper {
+        display: flex;
+        align-items: center;
+        height: 46px;
+        overflow: hidden;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #ffffff;
+        transition: all .2s ease;
+    }
+
+        .normal-input-wrapper:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .normal-input-wrapper > i {
+            width: 43px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    .normal-input {
+        flex: 1;
+        height: 100%;
+        min-width: 0;
+        padding-right: 14px;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        color: #172554;
+        font-size: 14px;
+    }
+
+
+    /* =========================================
+       SELECT
+    ========================================= */
+
+    .select-wrapper {
+        position: relative;
+    }
+
+        .select-wrapper .field-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            color: #64748b;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            height: 46px;
+            padding: 0 42px 0 43px;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 14px;
+            appearance: none;
+            outline: none;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+            .select-wrapper select:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+            }
+
+    .select-arrow {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+        font-size: 12px;
+    }
+
+
+    /* =========================================
+       PRICE
+    ========================================= */
+
+    .price-input-wrapper {
+        display: flex;
+        align-items: center;
+        height: 46px;
+        overflow: hidden;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        background: #ffffff;
+        transition: all .2s ease;
+    }
+
+        .price-input-wrapper:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .price-input-wrapper > i {
+            width: 43px;
+            text-align: center;
+            color: #059669;
+            font-size: 14px;
+        }
+
+    .price-input {
+        flex: 1;
+        height: 100%;
+        min-width: 0;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        color: #172554;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .price-input-wrapper > span {
+        padding-right: 14px;
+        color: #64748b;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================
+       INFORMATION NOTE
+    ========================================= */
+
+    .information-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        margin-top: 18px;
+        padding: 17px;
+        border-radius: 12px;
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .information-note-icon {
+        color: #2563eb;
+        font-size: 18px;
+    }
+
+    .information-note strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #1e3a8a;
+        font-size: 13px;
+    }
+
+    .information-note p {
+        margin: 0;
+        color: #475569;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================
+       ACTIONS
+    ========================================= */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 22px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 145px;
+        height: 46px;
+        padding: 0 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none !important;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .btn-save {
+        border: none;
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+            color: #ffffff;
+        }
+
+    .btn-cancel {
+        background: #ffffff;
+        border: 1px solid #dbe2ea;
+        color: #475569 !important;
+    }
+
+        .btn-cancel:hover {
+            background: #f8fafc;
+            color: #172554 !important;
+        }
+
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
+    @@media (max-width: 1000px) {
+
+        .room-create-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .image-preview {
+            height: 380px;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .room-create-page {
+            padding: 25px 18px 40px;
+        }
+
+        .room-create-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .room-create-header h1 {
+                font-size: 28px;
+            }
+
+        .btn-back-room {
+            width: 100%;
+        }
+
+        .create-card-body {
+            padding: 20px;
+        }
+
+        .image-preview {
+            height: 280px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<script>
+
+    function previewRoomImage(input) {
+
+        if (!input.files || !input.files[0]) {
+            return;
+        }
+
+        var file = input.files[0];
+
+
+        /* ==========================
+           CHECK TYPE
+        ========================== */
+
+        var allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (allowedTypes.indexOf(file.type) === -1) {
+
+            alert(
+                "Chỉ cho phép ảnh JPG, JPEG, PNG hoặc WEBP."
+            );
+
+            input.value = "";
+
+            return;
+        }
+
+
+        /* ==========================
+           CHECK SIZE
+        ========================== */
+
+        if (file.size > 5 * 1024 * 1024) {
+
+            alert(
+                "Ảnh không được vượt quá 5 MB."
+            );
+
+            input.value = "";
+
+            return;
+        }
+
+
+        /* ==========================
+           SHOW PREVIEW
+        ========================== */
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            var preview =
+                document.getElementById(
+                    "previewImage"
+                );
+
+            var placeholder =
+                document.querySelector(
+                    "#imagePreview .image-placeholder"
+                );
+
+            preview.src = e.target.result;
+
+            preview.style.display = "block";
+
+            if (placeholder) {
+                placeholder.style.display = "none";
+            }
+
+
+            /* FILE NAME */
+
+            document.getElementById(
+                "selectedFileName"
+            ).textContent = file.name;
+
+            document.getElementById(
+                "selectedFile"
+            ).style.display = "flex";
+
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+
+    /* =========================================
+       REMOVE IMAGE
+    ========================================= */
+
+    function removeRoomImage() {
+
+        var input =
+            document.getElementById(
+                "roomImage"
+            );
+
+        input.value = "";
+
+
+        var preview =
+            document.getElementById(
+                "previewImage"
+            );
+
+        preview.src = "";
+
+        preview.style.display = "none";
+
+
+        var placeholder =
+            document.querySelector(
+                "#imagePreview .image-placeholder"
+            );
+
+        if (placeholder) {
+            placeholder.style.display = "flex";
+        }
+
+
+        document.getElementById(
+            "selectedFile"
+        ).style.display = "none";
+
+    }
+
+</script>

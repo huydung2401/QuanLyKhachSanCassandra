@@ -1,0 +1,744 @@
+﻿@model QuanLyKhachSan.Models.Guest
+
+@{
+    ViewBag.Title = "Thêm khách hàng";
+}
+
+<style>
+    .guest-create-page {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+    /* ==============================
+       HEADER
+       ============================== */
+
+    .page-header-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-header-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
+    }
+
+    .page-header-text h2 {
+        margin: 0 0 5px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-header-text p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #374151;
+        text-decoration: none !important;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+        .back-button:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+    /* ==============================
+       CARD
+       ============================== */
+
+    .create-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        padding: 20px 25px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fafafa;
+    }
+
+    .card-header-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        color: #1f2937;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+        .card-header-title i {
+            color: #2563eb;
+        }
+
+    .card-body-custom {
+        padding: 28px 25px;
+    }
+
+    /* ==============================
+       FORM
+       ============================== */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px 25px;
+    }
+
+    .form-group-custom {
+        margin: 0;
+    }
+
+    .form-label-custom {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .form-label-custom i {
+            width: 17px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+    .required-mark {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        height: 44px;
+        padding: 9px 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+        color: #1f2937;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+    }
+
+        .form-control-custom:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .form-control-custom::placeholder {
+            color: #9ca3af;
+        }
+
+    .field-note {
+        margin-top: 6px;
+        color: #9ca3af;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .validation-message {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #dc2626;
+    }
+
+    /* ==============================
+       GUEST ID
+       ============================== */
+
+    .guest-id-wrapper {
+        position: relative;
+    }
+
+        .guest-id-wrapper .form-control-custom {
+            padding-right: 105px;
+        }
+
+    .id-example-badge {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 4px 8px;
+        border-radius: 5px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* ==============================
+       VALIDATION SUMMARY
+       ============================== */
+
+    .validation-summary {
+        margin-bottom: 22px;
+        padding: 13px 16px;
+        border-radius: 8px;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+        font-size: 14px;
+    }
+
+    /* ==============================
+       INFO BOX
+       ============================== */
+
+    .info-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 25px;
+        padding: 14px 16px;
+        border: 1px solid #dbeafe;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #1e40af;
+    }
+
+    .info-box-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2563eb;
+        font-size: 13px;
+    }
+
+    .info-box-content {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+        .info-box-content strong {
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+    /* ==============================
+       FOOTER
+       ============================== */
+
+    .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-custom {
+        min-width: 135px;
+        height: 43px;
+        padding: 9px 18px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+    .btn-save {
+        border: none;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.20);
+    }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+            color: #fff;
+        }
+
+    /* ==============================
+       RESPONSIVE
+       ============================== */
+
+    @@media (max-width: 768px) {
+
+        .guest-create-page {
+            padding: 5px 0 30px;
+        }
+
+        .page-header-custom {
+            align-items: flex-start;
+        }
+
+        .page-header-text h2 {
+            font-size: 22px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-body-custom {
+            padding: 22px 18px;
+        }
+
+        .card-header-custom {
+            padding: 18px;
+        }
+
+        .form-footer {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn-custom {
+            width: 100%;
+        }
+
+        .back-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+
+<div class="guest-create-page">
+
+    <!-- ==============================
+         PAGE HEADER
+         ============================== -->
+
+    <div class="page-header-custom">
+
+        <div class="page-header-left">
+
+            <div class="page-header-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+
+            <div class="page-header-text">
+
+                <h2>
+                    Thêm khách hàng
+                </h2>
+
+                <p>
+                    Tạo hồ sơ khách hàng mới trong hệ thống
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a href="@Url.Action("Index", "Guest")"
+           class="back-button">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Quay lại danh sách
+
+        </a>
+
+    </div>
+
+
+    <!-- ==============================
+         MAIN CARD
+         ============================== -->
+
+    <div class="create-card">
+
+        <div class="card-header-custom">
+
+            <h3 class="card-header-title">
+
+                <i class="fa-solid fa-address-card"></i>
+
+                Thông tin khách hàng
+
+            </h3>
+
+        </div>
+
+
+        <div class="card-body-custom">
+
+            @using (Html.BeginForm(
+                "Create",
+                "Guest",
+                FormMethod.Post,
+                new { @class = "guest-create-form" }
+            ))
+            {
+                @Html.AntiForgeryToken()
+
+
+                <!-- ==========================
+                     VALIDATION
+                     ========================== -->
+
+                @Html.ValidationSummary(
+                    true,
+                    "",
+                    new
+                    {
+                        @class = "validation-summary"
+                    }
+                )
+
+
+                <div class="form-grid">
+
+                    <!-- ==========================
+                         GUEST ID
+                         ========================== -->
+
+                    <div class="form-group-custom">
+
+                        <label class="form-label-custom"
+                               for="GuestId">
+
+                            <i class="fa-solid fa-fingerprint"></i>
+
+                            Mã khách hàng
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <div class="guest-id-wrapper">
+
+                            @Html.TextBoxFor(
+                                m => m.GuestId,
+                                new
+                                {
+                                    @class = "form-control-custom",
+                                    placeholder = "Ví dụ: GUEST006",
+                                    autocomplete = "off"
+                                }
+                            )
+
+                            <span class="id-example-badge">
+                                GUESTxxx
+                            </span>
+
+                        </div>
+
+
+                        @Html.ValidationMessageFor(
+                            m => m.GuestId,
+                            "",
+                            new
+                            {
+                                @class = "validation-message"
+                            }
+                        )
+
+
+                        <div class="field-note">
+                            Mã khách hàng phải là duy nhất trong hệ thống.
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==========================
+                         FULL NAME
+                         ========================== -->
+
+                    <div class="form-group-custom">
+
+                        <label class="form-label-custom"
+                               for="FullName">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            Họ và tên
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        @Html.TextBoxFor(
+                            m => m.FullName,
+                            new
+                            {
+                                @class = "form-control-custom",
+                                placeholder = "Nhập họ và tên khách hàng",
+                                autocomplete = "name"
+                            }
+                        )
+
+
+                        @Html.ValidationMessageFor(
+                            m => m.FullName,
+                            "",
+                            new
+                            {
+                                @class = "validation-message"
+                            }
+                        )
+
+                    </div>
+
+
+                    <!-- ==========================
+                         PHONE
+                         ========================== -->
+
+                    <div class="form-group-custom">
+
+                        <label class="form-label-custom"
+                               for="Phone">
+
+                            <i class="fa-solid fa-phone"></i>
+
+                            Số điện thoại
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        @Html.TextBoxFor(
+                            m => m.Phone,
+                            new
+                            {
+                                @class = "form-control-custom",
+                                placeholder = "Nhập số điện thoại",
+                                autocomplete = "tel",
+                                inputmode = "tel"
+                            }
+                        )
+
+
+                        @Html.ValidationMessageFor(
+                            m => m.Phone,
+                            "",
+                            new
+                            {
+                                @class = "validation-message"
+                            }
+                        )
+
+                    </div>
+
+
+                    <!-- ==========================
+                         EMAIL
+                         ========================== -->
+
+                    <div class="form-group-custom">
+
+                        <label class="form-label-custom"
+                               for="Email">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            Email
+
+                        </label>
+
+
+                        @Html.TextBoxFor(
+                            m => m.Email,
+                            new
+                            {
+                                @class = "form-control-custom",
+                                type = "email",
+                                placeholder = "example@gmail.com",
+                                autocomplete = "email"
+                            }
+                        )
+
+
+                        @Html.ValidationMessageFor(
+                            m => m.Email,
+                            "",
+                            new
+                            {
+                                @class = "validation-message"
+                            }
+                        )
+
+
+                        <div class="field-note">
+                            Có thể để trống nếu khách hàng không cung cấp email.
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==========================
+                         NATIONAL ID
+                         ========================== -->
+
+                    <div class="form-group-custom">
+
+                        <label class="form-label-custom"
+                               for="NationalId">
+
+                            <i class="fa-solid fa-id-card"></i>
+
+                            CCCD / CMND
+
+                        </label>
+
+
+                        @Html.TextBoxFor(
+                            m => m.NationalId,
+                            new
+                            {
+                                @class = "form-control-custom",
+                                placeholder = "Nhập số CCCD / CMND",
+                                autocomplete = "off",
+                                inputmode = "numeric"
+                            }
+                        )
+
+
+                        @Html.ValidationMessageFor(
+                            m => m.NationalId,
+                            "",
+                            new
+                            {
+                                @class = "validation-message"
+                            }
+                        )
+
+
+                        <div class="field-note">
+                            Nhập số CCCD hoặc CMND nếu có.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==============================
+                     INFORMATION BOX
+                     ============================== -->
+
+                <div class="info-box">
+
+                    <div class="info-box-icon">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+                    <div class="info-box-content">
+
+                        <strong>Lưu ý khi thêm khách hàng</strong>
+
+                        Vui lòng kiểm tra chính xác mã khách hàng,
+                        họ tên và số điện thoại trước khi lưu.
+                        Mã khách hàng không được trùng với dữ liệu đã có.
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==============================
+                     FORM FOOTER
+                     ============================== -->
+
+                <div class="form-footer">
+
+                    <a href="@Url.Action("Index", "Guest")"
+                       class="btn-custom btn-cancel">
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Hủy
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="btn-custom btn-save">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                        Lưu khách hàng
+
+                    </button>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,78 @@
+﻿@model List<QuanLyKhachSan.Controllers.HotelTestViewModel>
+
+    @{
+    ViewBag.Title = "Test Cassandra";
+    }
+
+    <div class="container mt-4">
+
+        <h2>Kiểm tra kết nối Astra DB</h2>
+
+        @if (ViewBag.Connected == true)
+    {
+        <div class="alert alert-success">
+            <strong>✓ Kết nối Astra DB thành công!</strong>
+        </div>
+
+        <p>
+            Cassandra Version:
+            <strong>@ViewBag.Version</strong>
+        </p>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>✗ Kết nối Astra DB thất bại!</strong>
+        </div>
+
+        if (ViewBag.Error != null)
+        {
+        <pre style="white-space: pre-wrap;">@ViewBag.Error</pre>
+        }
+    }
+
+        <hr />
+
+        <h3>Danh sách khách sạn từ Astra DB</h3>
+
+        @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-bordered table-striped">
+
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Tên khách sạn</th>
+                    <th>Địa chỉ</th>
+                    <th>Thành phố</th>
+                    <th>Số sao</th>
+                    <th>Điện thoại</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var hotel in Model)
+                {
+                <tr>
+                    <td>@hotel.HotelId</td>
+                    <td>@hotel.HotelName</td>
+                    <td>@hotel.Address</td>
+                    <td>@hotel.City</td>
+                    <td>@hotel.StarRating</td>
+                    <td>@hotel.Phone</td>
+                </tr>
+                }
+
+            </tbody>
+
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Không có dữ liệu khách sạn.
+        </div>
+    }
+
+    </div>

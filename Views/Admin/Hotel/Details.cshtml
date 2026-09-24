@@ -1,0 +1,85 @@
+﻿@model QuanLyKhachSan.Models.Hotel
+
+@{
+    ViewBag.Title = "Chi tiết khách sạn";
+}
+
+<div class="container">
+
+    <h2>Chi tiết khách sạn</h2>
+
+    <hr />
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Mã khách sạn
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.HotelId
+                </dd>
+
+                <dt class="col-sm-3">
+                    Tên khách sạn
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.HotelName
+                </dd>
+
+                <dt class="col-sm-3">
+                    Địa chỉ
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Address
+                </dd>
+
+                <dt class="col-sm-3">
+                    Thành phố
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.City
+                </dd>
+
+                <dt class="col-sm-3">
+                    Số sao
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.StarRating ⭐
+                </dd>
+
+                <dt class="col-sm-3">
+                    Điện thoại
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Phone
+                </dd>
+
+            </dl>
+
+            @Html.ActionLink(
+                "Sửa",
+                "Edit",
+                new { id = Model.HotelId },
+                new { @class = "btn btn-warning" })
+
+            @Html.ActionLink(
+                "Quay lại",
+                "Index",
+                null,
+                new { @class = "btn btn-secondary" })
+
+        </div>
+
+    </div>
+
+</div>

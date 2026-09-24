@@ -1,0 +1,1035 @@
+﻿@model QuanLyKhachSan.Models.UserHomeViewModel
+
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+<!-- =====================================================
+     HERO SLIDER
+     ===================================================== -->
+
+<section class="hero-slider">
+
+
+    <!-- SLIDE 1 -->
+
+    <div class="hero-slide active"
+         style="background-image:
+         linear-gradient(
+             rgba(8,20,40,.58),
+             rgba(8,20,40,.45)
+         ),
+         url('@Url.Content("~/Content/Images/Rooms/7.jpg")');">
+
+        <div class="user-container hero-content">
+
+            <div class="hero-stars">
+
+                @for (int i = 0; i < Model.StarRating; i++)
+                {
+                    <i class="fa-solid fa-star"></i>
+                }
+
+            </div>
+
+            <div class="hero-label">
+                WELCOME TO SUNRISE HOTEL
+            </div>
+
+            <h1>
+                Nơi mỗi kỳ nghỉ<br />
+                trở thành một kỷ niệm.
+            </h1>
+
+            <p>
+                Tận hưởng không gian nghỉ dưỡng hiện đại,
+                tiện nghi và dịch vụ tận tâm ngay tại
+                @Model.City.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#rooms"
+                   class="hero-primary-btn">
+
+                    KHÁM PHÁ PHÒNG
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+                <a href="#about"
+                   class="hero-outline-btn">
+
+                    VỀ CHÚNG TÔI
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SLIDE 2 -->
+
+    <div class="hero-slide"
+         style="background-image:
+         linear-gradient(
+             rgba(8,20,40,.58),
+             rgba(8,20,40,.45)
+         ),
+         url('@Url.Content("~/Content/Images/Rooms/8.jpg")');">
+
+        <div class="user-container hero-content">
+
+            <div class="hero-label">
+                COMFORT & EXPERIENCE
+            </div>
+
+            <h1>
+                Không gian được<br />
+                tạo nên cho bạn.
+            </h1>
+
+            <p>
+                Từ những căn phòng tiện nghi đến
+                dịch vụ chu đáo, mọi chi tiết đều
+                hướng đến trải nghiệm của khách hàng.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#services"
+                   class="hero-primary-btn">
+
+                    KHÁM PHÁ DỊCH VỤ
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SLIDE 3 -->
+
+    <div class="hero-slide"
+         style="background-image:
+         linear-gradient(
+             rgba(8,20,40,.58),
+             rgba(8,20,40,.45)
+         ),
+         url('@Url.Content("~/Content/Images/Rooms/9.jpg")');">
+
+        <div class="user-container hero-content">
+
+            <div class="hero-label">
+                YOUR PERFECT STAY
+            </div>
+
+            <h1>
+                Chọn căn phòng<br />
+                phù hợp với hành trình.
+            </h1>
+
+            <p>
+                Nhiều lựa chọn phòng nghỉ với
+                mức giá phù hợp cho cá nhân,
+                cặp đôi và gia đình.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#booking"
+                   class="hero-primary-btn">
+
+                    TÌM PHÒNG NGAY
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ARROWS -->
+
+    <button class="slider-arrow slider-prev"
+            type="button">
+
+        <i class="fa-solid fa-chevron-left"></i>
+
+    </button>
+
+    <button class="slider-arrow slider-next"
+            type="button">
+
+        <i class="fa-solid fa-chevron-right"></i>
+
+    </button>
+
+
+
+    <!-- DOTS -->
+
+    <div class="slider-dots">
+
+        <span class="slider-dot active"
+              data-slide="0"></span>
+
+        <span class="slider-dot"
+              data-slide="1"></span>
+
+        <span class="slider-dot"
+              data-slide="2"></span>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     BOOKING BOX
+     ===================================================== -->
+
+<section id="booking"
+         class="booking-section">
+
+    <div class="user-container">
+
+        <div class="booking-card">
+
+
+            <div class="booking-heading">
+
+                <span>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    RESERVATION
+                </span>
+
+                <h2>
+                    Tìm phòng phù hợp với bạn
+                </h2>
+
+                <p>
+                    Kiểm tra tình trạng phòng và đặt phòng
+                    trực tuyến nhanh chóng.
+                </p>
+
+            </div>
+
+
+
+            <form method="get"
+                  action="@Url.Action("Search", "UserBooking")">
+
+                <div class="booking-form-grid">
+
+
+                    <div class="booking-input">
+
+                        <label>
+                            NHẬN PHÒNG
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-regular fa-calendar"></i>
+
+                            <input type="date"
+                                   name="checkIn"
+                                   required />
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="booking-input">
+
+                        <label>
+                            TRẢ PHÒNG
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-regular fa-calendar"></i>
+
+                            <input type="date"
+                                   name="checkOut"
+                                   required />
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="booking-input">
+
+                        <label>
+                            SỐ KHÁCH
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-user-group"></i>
+
+                            <select name="guests">
+
+                                <option value="1">
+                                    1 khách
+                                </option>
+
+                                <option value="2"
+                                        selected>
+                                    2 khách
+                                </option>
+
+                                <option value="3">
+                                    3 khách
+                                </option>
+
+                                <option value="4">
+                                    4 khách
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <button type="submit"
+                            class="booking-search-btn">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        TÌM PHÒNG
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     HOTEL INTRO
+     ===================================================== -->
+
+<section id="about"
+         class="section about-section">
+
+    <div class="user-container">
+
+        <div class="about-grid">
+
+
+            <div class="about-images">
+
+                <img src="@Url.Content("~/Content/Images/Rooms/10.jpg")"
+                     class="about-main-image" />
+
+                <div class="experience-card">
+
+                    <strong>
+                        10+
+                    </strong>
+
+                    <span>
+                        Năm phục vụ
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="about-content">
+
+                <span class="section-label">
+                    ABOUT SUNRISE HOTEL
+                </span>
+
+                <h2>
+                    Trải nghiệm lưu trú
+                    khác biệt.
+                </h2>
+
+                <p class="about-lead">
+
+                    @Model.HotelName là điểm dừng chân
+                    lý tưởng dành cho những chuyến công tác,
+                    du lịch và kỳ nghỉ cùng gia đình.
+
+                </p>
+
+                <p>
+
+                    Chúng tôi mang đến không gian nghỉ ngơi
+                    hiện đại, dịch vụ chuyên nghiệp và sự
+                    chăm sóc tận tâm trong suốt thời gian
+                    khách lưu trú.
+
+                </p>
+
+
+                <div class="about-features">
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Phòng nghỉ tiện nghi
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Lễ tân hỗ trợ 24/7
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Đặt phòng trực tuyến
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Không gian sạch sẽ
+
+                    </div>
+
+                </div>
+
+
+                <a href="#rooms"
+                   class="dark-button">
+
+                    XEM PHÒNG
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ROOMS
+     ===================================================== -->
+
+<section id="rooms"
+         class="section rooms-section">
+
+    <div class="user-container">
+
+
+        <div class="section-heading center">
+
+            <span class="section-label">
+                OUR ACCOMMODATION
+            </span>
+
+            <h2>
+                Phòng nghỉ của chúng tôi
+            </h2>
+
+            <p>
+                Lựa chọn không gian phù hợp
+                cho hành trình của bạn.
+            </p>
+
+        </div>
+
+        <div class="room-grid">
+
+            @if (Model.Rooms != null &&
+                 Model.Rooms.Count > 0)
+            {
+                foreach (var room in Model.Rooms)
+                {
+                    var image =
+                        string.IsNullOrWhiteSpace(room.ImageUrl)
+                            ? "~/Content/Images/hotel-hero.jpg"
+                            : room.ImageUrl;
+
+                    var detailUrl =
+                        Url.Action(
+                            "Details",
+                            "UserRoom",
+                            new
+                            {
+                                id = room.RoomNumber
+                            }
+                        );
+
+                    <div class="room-card">
+
+
+                        <!-- =================================================
+                     ẢNH PHÒNG
+                     ================================================= -->
+
+                        <div class="room-image-wrapper">
+
+                            <a href="@detailUrl"
+                               class="room-image-link">
+
+                                <img src="@Url.Content(image)"
+                                     class="room-image"
+                                     alt="Phòng @room.RoomNumber - @room.RoomType" />
+
+                            </a>
+
+
+                            <!-- TRẠNG THÁI -->
+
+                            <div class="room-badge">
+
+                                @room.Status
+
+                            </div>
+
+
+                            <!-- OVERLAY -->
+
+                            <div class="room-overlay">
+
+                                <a href="@detailUrl">
+
+                                    XEM CHI TIẾT
+
+                                    <i class="fa-solid fa-arrow-right"></i>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                     THÔNG TIN PHÒNG
+                     ================================================= -->
+
+                        <div class="room-info">
+
+
+                            <!-- SỐ PHÒNG -->
+
+                            <div class="room-type">
+
+                                <span>
+                                    ROOM @room.RoomNumber
+                                </span>
+
+                            </div>
+
+
+                            <!-- TÊN PHÒNG -->
+
+                            <a href="@detailUrl"
+                               class="room-title-link">
+
+                                <h3>
+                                    @room.RoomType
+                                </h3>
+
+                            </a>
+
+
+                            <!-- TIỆN NGHI -->
+
+                            <div class="room-amenities">
+
+                                <span>
+                                    <i class="fa-solid fa-bed"></i>
+                                    Giường cao cấp
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-wifi"></i>
+                                    WiFi
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-snowflake"></i>
+                                    Điều hòa
+                                </span>
+
+                            </div>
+
+
+                            <!-- GIÁ -->
+
+                            <div class="room-footer">
+
+                                <div>
+
+                                    <strong>
+                                        @room.PricePerNight.ToString("N0")₫
+                                    </strong>
+
+                                    <small>
+                                        / đêm
+                                    </small>
+
+                                </div>
+
+
+                                <!-- ĐẶT PHÒNG -->
+
+                                <a href="#booking"
+                                   class="room-book">
+
+                                    Đặt phòng
+
+                                    <i class="fa-solid fa-arrow-right"></i>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-room">
+
+                    <i class="fa-solid fa-bed"></i>
+
+                    <h3>
+                        Hiện chưa có phòng
+                    </h3>
+
+                    <p>
+                        Vui lòng quay lại sau.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SERVICES
+     ===================================================== -->
+
+<section id="services"
+         class="section services-section">
+
+    <div class="user-container">
+
+
+        <div class="section-heading center">
+
+            <span class="section-label">
+                HOTEL SERVICES
+            </span>
+
+            <h2>
+                Dịch vụ & tiện nghi
+            </h2>
+
+            <p>
+                Mọi thứ bạn cần cho một kỳ nghỉ
+                thoải mái và thuận tiện.
+            </p>
+
+        </div>
+
+
+
+        <div class="service-grid">
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-wifi"></i>
+
+                </div>
+
+                <h3>
+                    WiFi tốc độ cao
+                </h3>
+
+                <p>
+                    Kết nối Internet miễn phí
+                    trong toàn bộ khách sạn.
+                </p>
+
+            </div>
+
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <h3>
+                    Lễ tân 24/7
+                </h3>
+
+                <p>
+                    Đội ngũ nhân viên luôn sẵn sàng
+                    hỗ trợ bạn mọi lúc.
+                </p>
+
+            </div>
+
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-car"></i>
+
+                </div>
+
+                <h3>
+                    Bãi đỗ xe
+                </h3>
+
+                <p>
+                    Khu vực đỗ xe thuận tiện
+                    và an toàn.
+                </p>
+
+            </div>
+
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-mug-hot"></i>
+
+                </div>
+
+                <h3>
+                    Nhà hàng & Café
+                </h3>
+
+                <p>
+                    Thưởng thức những món ăn
+                    và thức uống đa dạng.
+                </p>
+
+            </div>
+
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-broom"></i>
+
+                </div>
+
+                <h3>
+                    Dọn phòng
+                </h3>
+
+                <p>
+                    Dịch vụ vệ sinh phòng
+                    chuyên nghiệp hàng ngày.
+                </p>
+
+            </div>
+
+
+
+            <div class="service-card">
+
+                <div class="service-icon">
+
+                    <i class="fa-solid fa-shield-heart"></i>
+
+                </div>
+
+                <h3>
+                    An toàn & bảo mật
+                </h3>
+
+                <p>
+                    Đảm bảo không gian lưu trú
+                    an toàn cho khách hàng.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     GALLERY
+     ===================================================== -->
+
+
+<!-- =====================================================
+     TESTIMONIAL
+     ===================================================== -->
+
+<section class="testimonial-section">
+
+    <div class="user-container">
+
+
+        <div class="section-heading center light">
+
+            <span>
+                GUEST EXPERIENCE
+            </span>
+
+            <h2>
+                Khách hàng nói gì?
+            </h2>
+
+        </div>
+
+
+        <div class="testimonial-card">
+
+            <div class="testimonial-stars">
+
+                ★ ★ ★ ★ ★
+
+            </div>
+
+            <p>
+
+                “Không gian rất sạch sẽ, nhân viên
+                nhiệt tình và quy trình đặt phòng
+                nhanh chóng. Tôi sẽ quay lại trong
+                chuyến đi tiếp theo.”
+
+            </p>
+
+            <strong>
+                Nguyễn Minh Anh
+            </strong>
+
+            <span>
+                Khách hàng
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+
+
+
+@section scripts
+{
+
+    <script>
+
+    /* =====================================================
+       HERO SLIDER
+       ===================================================== */
+
+    const slides =
+        document.querySelectorAll(".hero-slide");
+
+    const dots =
+        document.querySelectorAll(".slider-dot");
+
+    let currentSlide = 0;
+
+
+    function showSlide(index)
+    {
+        slides.forEach(
+            slide => slide.classList.remove("active")
+        );
+
+        dots.forEach(
+            dot => dot.classList.remove("active")
+        );
+
+
+        slides[index].classList.add("active");
+
+        dots[index].classList.add("active");
+
+        currentSlide = index;
+    }
+
+
+    function nextSlide()
+    {
+        let next =
+            (currentSlide + 1) % slides.length;
+
+        showSlide(next);
+    }
+
+
+    function previousSlide()
+    {
+        let previous =
+            (currentSlide - 1 + slides.length)
+            % slides.length;
+
+        showSlide(previous);
+    }
+
+
+    document
+        .querySelector(".slider-next")
+        .addEventListener(
+            "click",
+            nextSlide
+        );
+
+
+    document
+        .querySelector(".slider-prev")
+        .addEventListener(
+            "click",
+            previousSlide
+        );
+
+
+    dots.forEach(
+        (dot, index) =>
+        {
+            dot.addEventListener(
+                "click",
+                function()
+                {
+                    showSlide(index);
+                }
+            );
+        }
+    );
+
+
+    // Tự động chuyển banner mỗi 5 giây
+
+    setInterval(
+        nextSlide,
+        5000
+    );
+
+
+
+    /* =====================================================
+       DATE VALIDATION
+       ===================================================== */
+
+    const checkIn =
+        document.querySelector(
+            'input[name="checkIn"]'
+        );
+
+    const checkOut =
+        document.querySelector(
+            'input[name="checkOut"]'
+        );
+
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+
+    if (checkIn)
+    {
+        checkIn.min = today;
+    }
+
+
+    if (checkOut)
+    {
+        checkOut.min = today;
+    }
+
+
+    if (checkIn)
+    {
+        checkIn.addEventListener(
+            "change",
+            function()
+            {
+                if (checkOut)
+                {
+                    checkOut.min =
+                        this.value;
+                }
+            }
+        );
+    }
+
+    </script>
+
+}
