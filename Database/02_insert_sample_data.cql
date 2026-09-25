@@ -188,3 +188,44 @@ SELECT
     revenue_amount 
 FROM revenue_by_hotel_month 
 WHERE hotel_id = 'HOTEL001' AND year_month = '2026-09';
+
+---ADMIN / USER — Hủy đặt phòng
+
+BEGIN BATCH
+  UPDATE bookings_by_hotel_date 
+  SET status = 'CANCELLED' 
+  WHERE hotel_id = 'HOTEL001' AND check_in_date = '2026-10-15' AND booking_id = 123e4567-e89b-12d3-a456-426614174000;
+Query:
+  UPDATE bookings_by_guest 
+  SET status = 'CANCELLED' 
+  WHERE guest_id = 'GUEST001' AND check_in_date = '2026-10-15' AND booking_id = 123e4567-e89b-12d3-a456-426614174000;
+
+  UPDATE bookings_by_phone 
+  SET status = 'CANCELLED' 
+  WHERE phone = '0123456789' AND check_in_date = '2026-10-15' AND booking_id = 123e4567-e89b-12d3-a456-426614174000;
+APPLY BATCH;
+
+---ADMIN — Cập nhật trạng thái phòng
+Querry:
+UPDATE rooms_by_hotel
+SET status = 'Maintenance'
+WHERE hotel_id = 'HOTEL001' AND room_number = 105;
+
+---Tính năng mới — Xem Đánh giá/Review của khách sạn
+code tạo bảng:
+CREATE TABLE reviews_by_hotel (
+    hotel_id TEXT,
+    created_at TIMESTAMP,
+    review_id UUID,
+    guest_name TEXT,
+    rating INT,
+    comment TEXT,
+    PRIMARY KEY (hotel_id, created_at, review_id)
+)
+WITH CLUSTERING ORDER BY (created_at DESC);
+
+Querry:
+
+SELECT rating, guest_name, comment, created_at
+FROM reviews_by_hotel
+WHERE hotel_id = 'HOTEL001';
